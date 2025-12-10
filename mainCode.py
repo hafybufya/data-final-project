@@ -5,8 +5,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+import numpy as np
 
-poverty_csv = 'poverty.csv'
+from sklearn.linear_model import LinearRegression
+
+from scipy.stats import linregress
+
+poverty_csv_country = 'poverty_country.csv'
+poverty_csv_world = 'poverty_region.csv'
 education_csv = 'education.csv'
 mmr_csv= 'maternal_mortality_rate.csv'
 
@@ -18,19 +24,17 @@ current_poverty_line_value = '$3.00'
 # -> Renaming columns for esaier analysis
 # ---------------------------------------------------------------------
 
-# POVERTY DF
+# POVERTY WORlD DF 
+
 def read_poverty_data():
 
-    df = pd.read_csv(poverty_csv)
+    poverty_df = pd.read_csv(poverty_csv_world)
 
-    # Mask to get data at 'current_poverty_line_value' 
-    poverty_df = df[df['poverty_line'] == current_poverty_line_value ]
-
-    poverty_df =  poverty_df[['year', 'name', 'headcount']].copy()
+    poverty_df =  poverty_df[['region_name', 'reporting_year', 'headcount']].copy()
 
     poverty_df = poverty_df.rename(columns={
-        'year': 'Year',
-        'name': 'Country',
+        'reporting_year': 'Year',
+        'region_name': 'Country',
         # PR = Poverty Rate (%)
         'headcount': 'PR'
     })
@@ -58,13 +62,15 @@ def read_education_data():
         #PCR = Primary completion rate, total (% of relevant age group)
         value_name='PCR'  # Column for PCR values
     )
+
+education_df = read_education_data()
     
 
 # MMR DF
 def read_MMR_data():
 
     df = pd.read_csv(mmr_csv)
-    MMR_df =  df[['DIM_TIME', 'GEO_NAME_SHORT', 'RATE_PER_100000_N']].copy()
+    MMR_df =  df[['DIM_TIME', 'GEO_NAME_SHORT',  'RATE_PER_100000_N']].copy()
 
     MMR_df = MMR_df.rename(columns={
         'DIM_TIME': 'Year',
@@ -74,3 +80,55 @@ def read_MMR_data():
     })
     return  MMR_df
 
+MMR_df = read_MMR_data()
+
+# ---------------------------------------------------------------------
+# Hypothesis 1
+# Do poorer countries have higher maternal mortality rates?
+# ---------------------------------------------------------------------
+
+def plot_poverty_MMR():
+
+    # Plotting both dfs told only include 'World' entity
+    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
+    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+
+    # Merge Datasets
+    merged_df = pd.merge(poverty_df_world , MMR_df_world, on=["Country", "Year"] )
+
+    # X and Y values
+    X_1D = merged_df['PR']
+    X = merged_df[['PR']] * 100  # Double brackets makes it 2D
+    Y = merged_df['MMR']
+
+    # Fit for linear regression
+    model = LinearRegression()
+    model.fit(X, Y)
+
+    # Prediction for Y
+    Y_pred = model.predict(X)
+
+    # Plotting graph
+    plt.figure(figsize=(8,6)) 
+    plt.scatter(X, Y, label='Data Points') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+    plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
+    plt.xlabel('Poverty Rate %')
+    
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    # r_value = correlation
+    slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
+
+    return r_value
+
+  #  return merged_df
+
+
+
+
+h= plot_poverty_MMR()
+print(h)
