@@ -10,7 +10,7 @@ from mainCode import *
 # ---------------------------------------------------------------------
 class my_unit_tests(unittest.TestCase):
 
-    def test_example():
+    def test_example(self):
         pass
 
     # run the tests

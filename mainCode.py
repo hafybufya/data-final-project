@@ -59,12 +59,15 @@ def read_education_data():
     education_df = df.melt(
         id_vars=['Country'],          # Country column kept the same
         var_name='Year',              # New column for Years
-        #PCR = Primary completion rate, total (% of relevant age group)
+        # PCR = Primary completion rate, total (% of relevant age group)
         value_name='PCR'  # Column for PCR values
     )
+    education_df.to_csv('filename.csv', index=False)
+
+    return education_df
 
 education_df = read_education_data()
-    
+
 
 # MMR DF
 def read_MMR_data():
@@ -129,6 +132,61 @@ def plot_poverty_MMR():
 
 
 
+def plot_bubble_plot():
 
-h= plot_poverty_MMR()
+    # Makes values for Year consistent types and coerce sets invalid parsing to NaN
+    poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
+    education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
+    MMR_df["Year"] = pd.to_numeric(MMR_df["Year"], errors="coerce")
+
+    # Filter    
+    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
+    education_df_world = education_df[education_df["Country"] == "World"]
+    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+
+    # Merge Datasets
+    merged_df = poverty_df_world.merge(MMR_df_world, on=["Country", "Year"])
+    merged_df = merged_df.merge(education_df_world, on=["Country", "Year"])
+
+    # X and Y values
+    X_1D = merged_df['PR']
+    X = merged_df[['PR']] * 100  # Double brackets makes it 2D
+    Y = merged_df['MMR']
+
+    # Bubbles
+    bubbles = merged_df['PCR']
+
+    # Fit for linear regression
+    model = LinearRegression()
+    model.fit(X, Y)
+
+    # Prediction for Y
+    Y_pred = model.predict(X)
+
+    # Plotting graph
+    plt.figure(figsize=(8,6)) 
+    scatter_plt= plt.scatter(X, Y, s=60, alpha= 0.5, c=bubbles, cmap='winter_r', label='Data Points') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+
+    # A color bar to show GDP scaled
+    cbar = plt.colorbar(scatter_plt)
+    cbar.set_label('Primary completion rate, total (%)', fontsize=10)
+
+
+
+    plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
+    plt.xlabel('Poverty Rate %')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    # r_value = correlation
+    slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
+
+   # return r_value
+
+    #return merged_df
+
+h= plot_bubble_plot()
 print(h)
