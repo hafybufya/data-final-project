@@ -5,8 +5,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import numpy as np
-
 from sklearn.linear_model import LinearRegression
 
 from scipy.stats import linregress
@@ -90,7 +88,8 @@ MMR_df = read_MMR_data()
 # Do poorer countries have higher maternal mortality rates?
 # ---------------------------------------------------------------------
 
-def plot_poverty_MMR():
+
+def plot_scatter_poverty_MMR():
 
     # Plotting both dfs told only include 'World' entity
     poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
@@ -121,12 +120,12 @@ def plot_poverty_MMR():
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.grid(True)
-    plt.show()
+  #  plt.show()
     
     # r_value = correlation
     slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
 
-    return r_value
+    return merged_df, r_value
 
   #  return merged_df
 
@@ -173,18 +172,17 @@ def plot_bubble_plot():
     cbar.set_label('Primary completion rate, total (%)', fontsize=10)
 
 
-
     plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.grid(True)
-    plt.show()
+  #  plt.show()
     
     # r_value = correlation
     slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
 
-   # return r_value
+    return r_value
 
     #return merged_df
 
