@@ -84,6 +84,13 @@ def read_MMR_data():
 
 MMR_df = read_MMR_data()
 
+
+# Funciton to be made later - functionw ill be to get mean of MMR from different countries
+# To become the value for its income group
+def read_MMR_income_data():
+    pass
+
+MMR_income_df = read_MMR_income_data()
 # ---------------------------------------------------------------------
 # Hypothesis 1
 # Do poorer countries have higher maternal mortality rates?
@@ -201,18 +208,22 @@ def plot_bubble_plot():
 # Make differing scatter plots two ways: one with countries put in diferent ifnancial categories by Ml
 # Other way: using dataset of countries in different known classificaiton by WBG
 
-def plot_low_middle_class_plot_MMR():
+def plot_income_group_scatter(income_group):
 
     # Plotting both dfs told only include 'World' entity
-    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
-    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+    education_df_income = education_df[education_df["Country"] == income_group]
+    
+    # Isn't currently working as function not created
+    # Using same name Country so it can be merged on Country key also
+    MMR_df_income = MMR_income_df[MMR_income_df["Country"] ==income_group]
 
     # Merge Datasets
-    merged_df = pd.merge(poverty_df_world , MMR_df_world, on=["Country", "Year"] )
+    merged_df = pd.merge(education_df_income , MMR_df_income, on=["Country", "Year"] )
 
     # X and Y values
-    X_1D = merged_df['PR']
-    X = merged_df[['PR']] * 100  # Double brackets makes it 2D
+    # education plotted against MMR
+    X_1D = merged_df['PCR']
+    X = merged_df[['PCR']] * 100  # Double brackets makes it 2D
     Y = merged_df['MMR']
 
     # Fit for linear regression
@@ -226,7 +237,7 @@ def plot_low_middle_class_plot_MMR():
     plt.figure(figsize=(8,6)) 
     plt.scatter(X, Y, label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
-    plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
+    plt.title(f'Linear Regression for Education Level and Maternal Mortality Rate in {income_group}')
     plt.xlabel('Poverty Rate %')
     
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
@@ -240,3 +251,7 @@ def plot_low_middle_class_plot_MMR():
     return merged_df, r_value
 
   #  return merged_df
+
+
+# Example usage, liked to instead populate with a list of values
+plot_income_group_scatter("Low income" )
