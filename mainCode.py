@@ -9,11 +9,11 @@ from sklearn.linear_model import LinearRegression
 
 from scipy.stats import linregress
 
-poverty_csv_country = 'poverty_country.csv'
-poverty_csv_world = 'poverty_region.csv'
-education_csv = 'education.csv'
-mmr_csv= 'maternal_mortality_rate.csv'
-income_classification_csv = 'income_group_classification.csv'
+poverty_csv_country = 'data/poverty_country.csv'
+poverty_csv_world = 'data/poverty_region.csv'
+education_csv = 'data/education.csv'
+mmr_csv= 'data/maternal_mortality_rate.csv'
+income_classification_csv = 'data/income_group_classification.csv'
 
 current_poverty_line_value = '$3.00'
 
