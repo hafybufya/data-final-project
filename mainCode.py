@@ -143,9 +143,18 @@ def plot_scatter_poverty_MMR():
     return f"Correlation for scatter plot: {r_value}"
 
 
+# ---------------------------------------------------------------------
+# Hypothesis 2
+# Countries which have similar levels of poverty (low, high, medium) will have differing MMR depending on education level
+
+# ---------------------------------------------------------------------
+
+#Next steps: Calc correlation for each group
+
+# Make differing scatter plots two ways: one with countries put in diferent ifnancial categories by Ml
+# Other way: using dataset of countries in different known classificaiton by WBG
 
 def plot_bubble_plot():
-
     
     # Makes values for Year consistent types and coerce sets invalid parsing to NaN
     poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
@@ -190,20 +199,6 @@ def plot_bubble_plot():
     plt.legend()
     plt.grid(True)
     plt.show()
-
-
-    #return merged_df
-
-# ---------------------------------------------------------------------
-# Hypothesis 2
-# Countries which have similar levels of poverty (low, high, medium) will have differing MMR depending on education level
-
-# ---------------------------------------------------------------------
-
-#Next steps: Calc correlation for each group
-
-# Make differing scatter plots two ways: one with countries put in diferent ifnancial categories by Ml
-# Other way: using dataset of countries in different known classificaiton by WBG
 
 def plot_income_group_scatter(income_group):
 
@@ -250,13 +245,18 @@ def plot_income_group_scatter(income_group):
 
     return f"{income_group}'s correlation is : {r_value}"
 
-
 # Call all df functions
 
 poverty_df = read_poverty_data()
 education_df = read_education_data()
 MMR_df = read_MMR_data()
 MMR_df_income = read_MMR_income_data()
+
+
+# Funcion to create boxplots of incoem groups
+def box_plots(income_group):
+        MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+
 
 
 if __name__ == "__main__":
