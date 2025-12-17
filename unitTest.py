@@ -27,7 +27,7 @@ class my_unit_tests(unittest.TestCase):
         self.assertTrue( isinstance(education_df, pd.DataFrame))
         # From read_MMR_data() function
         self.assertTrue( isinstance(MMR_df, pd.DataFrame))
-
+        self.assertTrue( isinstance(MMR_df_income, pd.DataFrame))
     # run the tests
 if __name__ == "__main__":
     unittest.main()
