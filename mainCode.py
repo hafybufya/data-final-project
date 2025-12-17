@@ -4,18 +4,19 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from sklearn.linear_model import LinearRegression
-
+from sklearn.metrics import r2_score
 from scipy.stats import linregress
 
-poverty_csv_country = 'data/poverty_country.csv'
-poverty_csv_world = 'data/poverty_region.csv'
-education_csv = 'data/education.csv'
-mmr_csv= 'data/maternal_mortality_rate.csv'
-income_classification_csv = 'data/income_group_classification.csv'
 
-current_poverty_line_value = '$3.00'
+# CSVs used in programs defined
+csv_folder = 'data'
+poverty_csv_country = f'{csv_folder}/poverty_country.csv'
+poverty_csv_world = f'{csv_folder}/poverty_region.csv'
+education_csv = f'{csv_folder}/education.csv'
+mmr_csv= f'{csv_folder}/maternal_mortality_rate.csv'
+income_classification_csv = f'{csv_folder}/income_group_classification.csv'
+
 
 # ---------------------------------------------------------------------
 # DATA CLEANING SECTION
@@ -38,8 +39,6 @@ def read_poverty_data():
         'headcount': 'PR'
     })
     return poverty_df
-
-poverty_df = read_poverty_data()
 
 
 # EDUCATION DF
@@ -65,9 +64,6 @@ def read_education_data():
 
     return education_df
 
-education_df = read_education_data()
-
-
 # MMR DF
 def read_MMR_data():
 
@@ -82,43 +78,27 @@ def read_MMR_data():
     })
     return  MMR_df
 
-MMR_df = read_MMR_data()
-
-
-# Funciton to be made later - function ill be to get mean of MMR from different countries
-# To become the value for its income group
-
 def read_MMR_income_data():
     #Columns: Year, Income group, Mean MMR 
     
     df = pd.read_csv(income_classification_csv)
-    
     income_df =  df[['Economy', 'Income group']].copy()
-
     income_df = income_df.rename(columns={
         # Same name for merging with MMR df
-        'Economy': 'Country',
-    })
+        'Economy': 'Country'})
+    
     # Merge Datasets
     merged_df = pd.merge(MMR_df , income_df, on=["Country"] )
     
-    # Unecessary
-    # merged_df["Year"] = pd.to_numeric(merged_df["Year"], errors="coerce")
-
-    # CSV LOOKS CORRECT
-    # merged_df.to_csv('filename.csv', index=False)
-
     result = (
         merged_df
         # as_index = False ensures grouping stays as normal columsn
         .groupby(["Year", "Income group"], as_index=False).agg(Mean_MMR=("MMR", "mean"))
     )
-    # CSV LOOKS CORRECT
-    #result.to_csv('filename.csv', index=False)
 
     return result
 
-MMR_df_income = read_MMR_income_data()
+
 # ---------------------------------------------------------------------
 # Hypothesis 1
 # Do poorer countries have higher maternal mortality rates?
@@ -127,6 +107,7 @@ MMR_df_income = read_MMR_income_data()
 #Future Improvement: Adding a heatmap for easier visualisation
 
 def plot_scatter_poverty_MMR():
+
 
     # Plotting both dfs told only include 'World' entity
     poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
@@ -137,7 +118,6 @@ def plot_scatter_poverty_MMR():
     merged_df = pd.merge(poverty_df_world , MMR_df_world, on=["Country", "Year"] )
 
     # X and Y values
-    X_1D = merged_df['PR']
     X = merged_df[['PR']] * 100  # Double brackets makes it 2D
     Y = merged_df['MMR']
 
@@ -148,29 +128,27 @@ def plot_scatter_poverty_MMR():
     # Prediction for Y
     Y_pred = model.predict(X)
 
+
     # Plotting graph
-    plt.figure(figsize=(8,6)) 
+    plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
     plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
-    
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.grid(True)
-  #  plt.show()
-    
-    # r_value = correlation
-    slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
+    plt.show()
 
-    return merged_df, r_value
+    r_value = r2_score(Y, Y_pred)
 
-  #  return merged_df
+    return f"Correlation for scatter plot: {r_value}"
 
 
 
 def plot_bubble_plot():
 
+    
     # Makes values for Year consistent types and coerce sets invalid parsing to NaN
     poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
     education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
@@ -201,26 +179,20 @@ def plot_bubble_plot():
     Y_pred = model.predict(X)
 
     # Plotting graph
-    plt.figure(figsize=(8,6)) 
+    plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     scatter_plt= plt.scatter(X, Y, s=60, alpha= 0.5, c=bubbles, cmap='winter_r', label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
 
     # A color bar to show GDP scaled
     cbar = plt.colorbar(scatter_plt)
     cbar.set_label('Primary completion rate, total (%)', fontsize=10)
-
-
     plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.grid(True)
-  #  plt.show()
-    
-    # r_value = correlation
-    slope, intercept, r_value, p_value, std_err = linregress(X_1D , Y)
+    plt.show()
 
-    return r_value
 
     #return merged_df
 
@@ -230,9 +202,7 @@ def plot_bubble_plot():
 
 # ---------------------------------------------------------------------
 
-# Steps (subject to change)
-# 1. Make scatter plots/find correlation between education and MMR 
-#   for differing low, middle high incoeme, etc
+#Next steps: Calc correlation for each group
 
 # Make differing scatter plots two ways: one with countries put in diferent ifnancial categories by Ml
 # Other way: using dataset of countries in different known classificaiton by WBG
@@ -244,29 +214,19 @@ def plot_income_group_scatter(income_group):
 
     # Plotting both dfs told only include 'World' entity
     education_df_income = education_df[education_df["Country"] == income_group]
-
     mmr_income = MMR_df_income[MMR_df_income["Income group"] ==income_group]
 
-    
-   
     # For merging datasets
     education_df_income = education_df_income.rename(columns={
-        'Country': 'Income group',
- 
-    })
+        'Country': 'Income group' })
     
     # Merge Datasets
     merged_df = pd.merge(education_df_income , mmr_income, on=["Income group", "Year"] )
 
-    # LinearRegression doesnt accept (X)input with NaN
+    # LinearRegression doesnt accept (X) input with NaN
     merged_df = merged_df.dropna(subset=['PCR', 'Mean_MMR'])
 
-
-    # CSV looks correct! 
-    # merged_df.to_csv('filename.csv', index=False)
-
     # X and Y values
-
     X = merged_df[['PCR']] # Double brackets makes it 2D
     Y = merged_df['Mean_MMR']
 
@@ -278,22 +238,41 @@ def plot_income_group_scatter(income_group):
     Y_pred = model.predict(X)
 
     # Plotting graph
-    plt.figure(figsize=(8,6)) 
+    plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
-    plt.title(f'Linear Regression for Primary Completion Rate and Mean Maternal Mortality Rate {income_group}')
+    plt.title(f'{income_group}')
     plt.xlabel('Primary completion rate %')
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.grid(True)
     plt.show()
 
+    r_value = r2_score(Y, Y_pred)
+
+    return f"{income_group}'s correlation is : {r_value}"
 
 
+# Call all df functions
+
+poverty_df = read_poverty_data()
+education_df = read_education_data()
+MMR_df = read_MMR_data()
+MMR_df_income = read_MMR_income_data()
 
 
-# Example usage, liked to instead populate with a list of values
-# plot_income_group_scatter("Low income" )
+if __name__ == "__main__":
+   
+    # Plots scatter plot for poverty and MMR globally 
+    scatter_plot= plot_scatter_poverty_MMR()
 
-income_graph =  plot_income_group_scatter('Lower middle income')
-print(income_graph)
+    # Plots bubble plot for global data
+    bubble_plot= plot_bubble_plot()
+
+    # Plots Income groups graphs
+    income_groups = MMR_df_income["Income group"].unique()
+    for income_group in income_groups:
+        income_groups = plot_income_group_scatter(income_group)
+        print(income_groups)
+
+    
