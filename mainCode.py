@@ -15,7 +15,6 @@ education_csv = f'{csv_folder}/education.csv'
 mmr_csv= f'{csv_folder}/maternal_mortality_rate.csv'
 income_classification_csv = f'{csv_folder}/income_group_classification.csv'
 
-
 # ---------------------------------------------------------------------
 # DATA CLEANING SECTION
 # -> Including only necessary columns in dataFrames
