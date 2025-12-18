@@ -30,6 +30,11 @@ class my_unit_tests(unittest.TestCase):
         # From read_MMR_data() function
         self.assertTrue( isinstance(MMR_df, pd.DataFrame))
         self.assertTrue( isinstance(MMR_df_income, pd.DataFrame))
+
+    # Checks if functions returns a value between -1 to 1
+    def test_scatter_corr_numeric(self):
+        result = plot_scatter_poverty_MMR()
+        self.assertTrue(-1 <= result <= 1)
         
     # run the tests
 if __name__ == "__main__":

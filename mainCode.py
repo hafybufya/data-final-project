@@ -26,7 +26,6 @@ income_classification_csv = f'{csv_folder}/income_group_classification.csv'
 def read_poverty_data():
 
     poverty_df = pd.read_csv(poverty_csv_world)
-
     poverty_df =  poverty_df[['region_name', 'reporting_year', 'headcount']].copy()
 
     poverty_df = poverty_df.rename(columns={
@@ -43,7 +42,6 @@ def read_education_data():
 
     # Deletes first 4 rows of empty data and sets the first row as header
     df = pd.read_csv(education_csv, skiprows=3, header=0)
-
     df = df.drop(['Country Code', 'Indicator Name', 'Indicator Code'], axis=1)
 
     df = df.rename(columns={
@@ -141,7 +139,7 @@ def plot_scatter_poverty_MMR():
 
     r_value = r2_score(Y, Y_pred)
 
-    return f"Correlation for scatter plot: {r_value}"
+    return r_value
 
 
 # ---------------------------------------------------------------------
