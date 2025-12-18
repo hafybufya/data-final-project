@@ -93,6 +93,8 @@ def read_MMR_income_data():
         # as_index = False ensures grouping stays as normal columsn
         .groupby(["Year", "Income group"], as_index=False).agg(Mean_MMR=("MMR", "mean"))
     )
+    result.to_csv('filename.csv', index=False)
+
 
     return result
 
@@ -254,9 +256,19 @@ MMR_df_income = read_MMR_income_data()
 
 
 # Funcion to create boxplots of incoem groups
-def box_plots(income_group):
-        MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+def box_plots():
 
+    MMR_df_income.boxplot(
+        column="Mean_MMR",
+        by="Income group"
+    )
+    # Plotting the Graph
+    plt.suptitle(" ") # Gets rid of automatic graph title
+    plt.title("Distribution of Mean MMR by Income Group")
+    plt.xlabel("Income Group")
+    plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
+    plt.grid(axis="y")
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -273,4 +285,5 @@ if __name__ == "__main__":
         income_groups = plot_income_group_scatter(income_group)
         print(income_groups)
 
-    
+    box_plot = box_plots()
+        
