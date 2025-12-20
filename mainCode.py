@@ -170,7 +170,6 @@ def plot_bubble_plot():
     merged_df = merged_df.merge(education_df_world, on=["Country", "Year"])
 
     # X and Y values
-    X_1D = merged_df['PR']
     X = merged_df[['PR']] * 100  # Double brackets makes it 2D
     Y = merged_df['MMR']
 
@@ -199,6 +198,7 @@ def plot_bubble_plot():
     plt.grid(True)
     plt.show()
 
+# Plot based on income groups
 def plot_income_group_scatter(income_group):
 
     education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
@@ -244,14 +244,6 @@ def plot_income_group_scatter(income_group):
 
     return f"{income_group}'s correlation is : {r_value}"
 
-# Call all df functions
-
-poverty_df = read_poverty_data()
-education_df = read_education_data()
-MMR_df = read_MMR_data()
-MMR_df_income = read_MMR_income_data()
-
-
 # Funcion to create boxplots of incoem groups
 def box_plots():
 
@@ -266,6 +258,20 @@ def box_plots():
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
     plt.grid(axis="y")
     plt.show()
+
+
+
+# ---------------------------------------------------------------------
+# Estimating if UN will meet their goal of  7 maternal deaths per 
+# 100,000 by 2030
+# ---------------------------------------------------------------------
+
+# Call all df functions
+
+poverty_df = read_poverty_data()
+education_df = read_education_data()
+MMR_df = read_MMR_data()
+MMR_df_income = read_MMR_income_data()
 
 
 if __name__ == "__main__":
@@ -283,4 +289,3 @@ if __name__ == "__main__":
         print(income_groups)
 
     box_plot = box_plots()
-        
