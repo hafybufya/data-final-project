@@ -130,10 +130,11 @@ def plot_scatter_poverty_MMR():
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
-    plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
+    plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    plt.legend()
+    txt="Scatter Plot showing the relationship between Poverty Rate and Maternal Mortality Rate on a Global Scale."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.show()
 
@@ -191,10 +192,11 @@ def plot_bubble_plot():
     # A color bar to show GDP scaled
     cbar = plt.colorbar(scatter_plt)
     cbar.set_label('Primary completion rate, total (%)', fontsize=10)
-    plt.title('Linear Regression for Poverty Rate and Maternal Mortality Rate')
+    plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    plt.legend()
+    txt="Bubble Plot showing the relationship between Poverty Rate, Maternal Mortality Rate and Education Completion on a Global Scale."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.show()
 
@@ -233,10 +235,11 @@ def plot_income_group_scatter(income_group):
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
-    plt.title(f'{income_group}')
+    plt.title(f'{income_group}: Primary Completion Rate vs Mean Maternal Mortality Rate')
     plt.xlabel('Primary completion rate %')
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
-    plt.legend()
+    txt=f"Scatter Plot showing the relationship between Education Rate and Mean Maternal Mortality for{income_group}."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.show()
 
@@ -256,6 +259,8 @@ def box_plots():
     plt.title("Distribution of Mean MMR by Income Group")
     plt.xlabel("Income Group")
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
+    txt="Box Plots showing the spread of Mean Mortality Rate in different income groups."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
     plt.show()
 
