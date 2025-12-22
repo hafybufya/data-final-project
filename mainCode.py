@@ -36,7 +36,6 @@ def read_poverty_data():
     })
     return poverty_df
 
-
 # EDUCATION DF
 def read_education_data():
 
@@ -73,6 +72,7 @@ def read_MMR_data():
     })
     return  MMR_df
 
+# MMR INCOME DF
 def read_MMR_income_data():
     #Columns: Year, Income group, Mean MMR 
     
@@ -176,6 +176,7 @@ def plot_bubble_plot():
 
     # Bubbles
     bubbles = merged_df['PCR']
+    
 
     # Fit for linear regression
     model = LinearRegression()
@@ -186,7 +187,7 @@ def plot_bubble_plot():
 
     # Plotting graph
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
-    scatter_plt= plt.scatter(X, Y, s=60, alpha= 0.5, c=bubbles, cmap='winter_r', label='Data Points') 
+    scatter_plt= plt.scatter(X, Y,  alpha= 0.5, s=65, c=bubbles, cmap='winter_r', label='Data Points') 
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
 
     # A color bar to show GDP scaled
@@ -200,6 +201,9 @@ def plot_bubble_plot():
     plt.grid(True)
     plt.show()
 
+    return merged_df['PCR'].describe()
+
+    
 # Plot based on income groups
 def plot_income_group_scatter(income_group):
 
@@ -259,11 +263,16 @@ def box_plots():
     plt.title("Distribution of Mean MMR by Income Group")
     plt.xlabel("Income Group")
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
+    # Add horizontal line at y = 70 (70 MMR)
+    plt.axhline(y=70, linewidth=1, color= 'red')
+    plt.text(
+    0.02, 70, 'MMR = 70',
+    verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
+
     txt="Box Plots showing the spread of Mean Mortality Rate in different income groups."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
     plt.show()
-
 
 
 # ---------------------------------------------------------------------
