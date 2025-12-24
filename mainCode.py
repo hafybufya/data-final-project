@@ -149,10 +149,70 @@ def plot_scatter_poverty_MMR():
 
 # ---------------------------------------------------------------------
 
-#Next steps: Calc correlation for each group
+# Funcion to create boxplots of income groups 
+# Countries organised in the most recent year -> 2023 
+def box_plots():
+  
+    mmr_2023 = MMR_df[MMR_df["Year"] == 2023]
+    income_df = pd.read_csv(income_classification_csv)
+    income_df = income_df.rename(columns={'Economy': 'Country'})
 
-# Make differing scatter plots two ways: one with countries put in diferent ifnancial categories by Ml
-# Other way: using dataset of countries in different known classificaiton by WBG
+    merged_df = mmr_2023.merge(income_df, on=["Country"])
+
+    merged_df.to_csv('filename.csv', index=False)
+
+    merged_df.boxplot(
+        column="MMR",
+        by="Income group"
+    )
+    # Plotting the Graph
+    plt.suptitle(" ") # Gets rid of automatic graph title
+    plt.title("Distribution of Maternal Mortality Rate by Income Group ")
+    plt.xlabel("Income Group")
+    plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
+    # Add horizontal line at y = 70 (70 MMR)
+    plt.axhline(y=70, linewidth=1, color= 'red')
+    plt.text(
+    0.02, 70, 'MMR = 70',
+    verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
+
+    txt="Box Plots showing the distribution of MMR in different income groups. Each point represent a country."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    plt.grid(axis="y")
+    plt.show()
+    return merged_df.groupby("Income group")["MMR"].describe()
+
+def plot_time_income_mmr_series():
+    mmr_df = MMR_df_income.copy()
+    mmr_df["Year"] = pd.to_numeric(mmr_df["Year"], errors="coerce")
+    mmr_df = mmr_df.sort_values("Year") # Organises Year to prevent spaghetti time series
+
+    df = mmr_df.dropna(subset=["Year", "Mean_MMR", "Income group"])
+
+    income_groups = mmr_df["Income group"].unique()
+
+    for income_group in income_groups:
+        group_df = df[df["Income group"] == income_group]
+        group_df = group_df.sort_values("Year")
+
+        plt.plot(
+            group_df["Year"],
+            group_df["Mean_MMR"],
+            label=income_group
+        )
+
+    x =  df["Year"]
+    y =  df["Mean_MMR"] 
+    plt.title(" Time Series on Global Maternal Moratlity Rate (1985-2023) ")  
+    plt.xlabel('Year')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    plt.legend()
+    plt.show()
+
+# ---------------------------------------------------------------------
+# Appendix figures
+# Figures appearing in the appendix of the report
+# ---------------------------------------------------------------------
 
 def plot_bubble_plot():
     
@@ -203,7 +263,22 @@ def plot_bubble_plot():
 
     return merged_df['PCR'].describe()
 
-    
+# Time series of global mmr in years
+def plot_time_global_mmr_series():
+
+    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+    MMR_df_world["Year"] = pd.to_numeric(MMR_df_world["Year"], errors="coerce")
+    MMR_df_world = MMR_df_world.sort_values("Year") # Organises Year to prevent spaghetti time series
+
+    x =  MMR_df_world["Year"]
+    y =  MMR_df_world["MMR"] 
+    plt.title(" Time Series on Global Maternal Moratlity Rate (1985-2023) ")  
+    plt.xlabel('Year')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    plt.plot(x, y)
+    plt.legend()
+    plt.show()
+
 # Plot based on income groups
 def plot_income_group_scatter(income_group):
 
@@ -251,40 +326,6 @@ def plot_income_group_scatter(income_group):
 
     return f"{income_group}'s correlation is : {r_value}"
 
-# Funcion to create boxplots of income groups 
-# Countries organised in the most recent year -> 2023 
-def box_plots():
-  
-    mmr_2023 = MMR_df[MMR_df["Year"] == 2023]
-    income_df = pd.read_csv(income_classification_csv)
-    income_df = income_df.rename(columns={'Economy': 'Country'})
-
-    merged_df = mmr_2023.merge(income_df, on=["Country"])
-
-    merged_df.to_csv('filename.csv', index=False)
-
-    merged_df.boxplot(
-        column="MMR",
-        by="Income group"
-    )
-    # Plotting the Graph
-    plt.suptitle(" ") # Gets rid of automatic graph title
-    plt.title("Distribution of Maternal Mortality Rate by Income Group ")
-    plt.xlabel("Income Group")
-    plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
-    # Add horizontal line at y = 70 (70 MMR)
-    plt.axhline(y=70, linewidth=1, color= 'red')
-    plt.text(
-    0.02, 70, 'MMR = 70',
-    verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
-
-    txt="Box Plots showing the distribution of MMR in different income groups. Each point represent a country."
-    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
-    plt.grid(axis="y")
-    plt.show()
-    return merged_df.groupby("Income group")["MMR"].describe()
-
-
 # ---------------------------------------------------------------------
 # Estimating if UN will meet their goal of  7 maternal deaths per 
 # 100,000 by 2030
@@ -312,5 +353,8 @@ if __name__ == "__main__":
     #     income_groups = plot_income_group_scatter(income_group)
     #     print(income_groups)
 
-    box_plot = box_plots()
-    print(box_plot)
+    plot = plot_time_income_mmr_series()
+    print(plot)
+
+    # box_plot = box_plots()
+    # print(box_plot)
