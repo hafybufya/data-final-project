@@ -241,7 +241,7 @@ def plot_income_group_scatter(income_group):
     plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
     plt.title(f'{income_group}: Primary Completion Rate vs Mean Maternal Mortality Rate')
     plt.xlabel('Primary completion rate %')
-    plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     txt=f"Scatter Plot showing the relationship between Education Rate and Mean Maternal Mortality for{income_group}."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
