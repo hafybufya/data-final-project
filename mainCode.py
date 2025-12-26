@@ -90,8 +90,7 @@ def read_MMR_income_data():
         # as_index = False ensures grouping stays as normal columsn
         .groupby(["Year", "Income group"], as_index=False).agg(Mean_MMR=("MMR", "mean"))
     )
-    result.to_csv('filename.csv', index=False)
-
+    #result.to_csv('filename.csv', index=False)
 
     return result
 
@@ -159,7 +158,7 @@ def box_plots():
 
     merged_df = mmr_2023.merge(income_df, on=["Country"])
 
-    merged_df.to_csv('filename.csv', index=False)
+    #merged_df.to_csv('filename.csv', index=False)
 
     merged_df.boxplot(
         column="MMR",
@@ -326,6 +325,58 @@ def plot_income_group_scatter(income_group):
 
     return f"{income_group}'s correlation is : {r_value}"
 
+
+def plot_high_low_income_scatter():
+
+    fig, (ax_high, ax_low) = plt.subplots(1, 2, figsize=(15, 6))
+
+    # high income
+    plot_single_income("High income", ax_high)
+
+    # low income
+    plot_single_income("Low income", ax_low)
+
+    plt.tight_layout()
+    txt="Scatter Plot showing the relationship between Education Completion and Maternal Mortality Rate in High and Low Income Groups."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    plt.show()
+
+def plot_single_income(income_group, ax):
+
+    education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
+    MMR_df_income["Year"] = pd.to_numeric(MMR_df_income["Year"], errors="coerce")
+
+    education_df_income = education_df[education_df["Country"] == income_group]
+    mmr_income = MMR_df_income[MMR_df_income["Income group"] == income_group]
+
+    education_df_income = education_df_income.rename(
+        columns={'Country': 'Income group'}
+    )
+
+    merged_df = pd.merge(
+        education_df_income,
+        mmr_income,
+        on=["Income group", "Year"]
+    )
+
+    merged_df = merged_df.dropna(subset=['PCR', 'Mean_MMR'])
+
+    X = merged_df[['PCR']]
+    Y = merged_df['Mean_MMR']
+
+    model = LinearRegression()
+    model.fit(X, Y)
+    Y_pred = model.predict(X)
+
+    ax.scatter(X, Y)
+    ax.plot(X, Y_pred, color='red', linewidth=2)
+
+    ax.set_title(f"{income_group}")
+    ax.set_xlabel("Primary completion rate %")
+    ax.set_ylabel("Maternal Mortality Rate")
+
+    ax.grid(True)
+
 # ---------------------------------------------------------------------
 # Estimating if UN will meet their goal of  7 maternal deaths per 
 # 100,000 by 2030
@@ -347,14 +398,16 @@ if __name__ == "__main__":
     # # Plots bubble plot for global data
     # bubble_plot= plot_bubble_plot()
 
-    # # Plots Income groups graphs
+    # Plots Income groups graphs
     # income_groups = MMR_df_income["Income group"].unique()
     # for income_group in income_groups:
     #     income_groups = plot_income_group_scatter(income_group)
     #     print(income_groups)
 
-    plot = plot_time_income_mmr_series()
-    print(plot)
+    high_low_scatter = plot_high_low_income_scatter()
+
+    # plot = plot_time_income_mmr_series()
+    # print(plot)
 
     # box_plot = box_plots()
     # print(box_plot)
