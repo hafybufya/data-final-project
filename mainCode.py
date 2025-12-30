@@ -23,7 +23,7 @@ income_classification_csv = f'{csv_folder}/income_group_classification.csv'
 
 # POVERTY WORlD DF 
 
-def read_poverty_data():
+def read_poverty_data(start_year, end_year):
 
     poverty_df = pd.read_csv(poverty_csv_world)
     poverty_df =  poverty_df[['region_name', 'reporting_year', 'headcount']].copy()
@@ -34,10 +34,12 @@ def read_poverty_data():
         # PR = Poverty Rate (%)
         'headcount': 'PR'
     })
+    poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
+    poverty_df = poverty_df[(poverty_df["Year"] >= start_year) & (poverty_df["Year"] <= end_year)]
     return poverty_df
 
 # EDUCATION DF
-def read_education_data():
+def read_education_data(start_year, end_year):
 
     # Deletes first 4 rows of empty data and sets the first row as header
     df = pd.read_csv(education_csv, skiprows=3, header=0)
@@ -55,11 +57,12 @@ def read_education_data():
         value_name='PCR'  # Column for PCR values
     )
     # education_df.to_csv('filename.csv', index=False)
-
+    education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
+    education_df = education_df[(education_df["Year"] >= start_year) & (education_df["Year"] <= end_year)]
     return education_df
 
 # MMR DF
-def read_MMR_data():
+def read_MMR_data(start_year, end_year):
 
     df = pd.read_csv(mmr_csv)
     MMR_df =  df[['DIM_TIME', 'GEO_NAME_SHORT',  'RATE_PER_100000_N']].copy()
@@ -70,6 +73,8 @@ def read_MMR_data():
         # MMR = Maternal deaths per 100,000 births
         'RATE_PER_100000_N': 'MMR'
     })
+    MMR_df["Year"] = pd.to_numeric(MMR_df["Year"], errors="coerce")
+    MMR_df = MMR_df[(MMR_df["Year"] >= start_year) & (MMR_df["Year"] <= end_year)]
     return  MMR_df
 
 # MMR INCOME DF
@@ -96,8 +101,7 @@ def read_MMR_income_data():
 
 
 # ---------------------------------------------------------------------
-# Hypothesis 1
-# Do poorer countries have higher maternal mortality rates?
+# PLOTS
 # ---------------------------------------------------------------------
 
 #Future Improvement: Adding a heatmap for easier visualisation
@@ -139,14 +143,10 @@ def plot_scatter_poverty_MMR():
 
     r_value = r2_score(Y, Y_pred)
 
-    return r_value
+    slope = model.coef_[0]
 
+    return slope 
 
-# ---------------------------------------------------------------------
-# Hypothesis 2
-# Countries which have similar levels of poverty (low, high, medium) will have differing MMR depending on education level
-
-# ---------------------------------------------------------------------
 
 # Funcion to create boxplots of income groups 
 # Countries organised in the most recent year -> 2023 
@@ -181,6 +181,7 @@ def box_plots():
     plt.show()
     return merged_df.groupby("Income group")["MMR"].describe()
 
+
 def plot_time_income_mmr_series():
     mmr_df = MMR_df_income.copy()
     mmr_df["Year"] = pd.to_numeric(mmr_df["Year"], errors="coerce")
@@ -208,17 +209,13 @@ def plot_time_income_mmr_series():
     plt.legend()
     plt.show()
 
-# ---------------------------------------------------------------------
-# Appendix figures
-# Figures appearing in the appendix of the report
-# ---------------------------------------------------------------------
 
 def plot_bubble_plot():
-    
-    # Makes values for Year consistent types and coerce sets invalid parsing to NaN
-    poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
-    education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
-    MMR_df["Year"] = pd.to_numeric(MMR_df["Year"], errors="coerce")
+    # Redudant but not removing code until certain
+    # # Makes values for Year consistent types and coerce sets invalid parsing to NaN
+    # poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
+    # education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
+    # MMR_df["Year"] = pd.to_numeric(MMR_df["Year"], errors="coerce")
 
     # Filter    
     poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
@@ -266,7 +263,8 @@ def plot_bubble_plot():
 def plot_time_global_mmr_series():
 
     MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
-    MMR_df_world["Year"] = pd.to_numeric(MMR_df_world["Year"], errors="coerce")
+    # Redudant but not removing code until certain
+    # MMR_df_world["Year"] = pd.to_numeric(MMR_df_world["Year"], errors="coerce")
     MMR_df_world = MMR_df_world.sort_values("Year") # Organises Year to prevent spaghetti time series
 
     x =  MMR_df_world["Year"]
@@ -278,11 +276,13 @@ def plot_time_global_mmr_series():
     plt.legend()
     plt.show()
 
+
 # Plot based on income groups
 def plot_income_group_scatter(income_group):
 
-    education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
-    MMR_df_income["Year"] = pd.to_numeric(MMR_df_income["Year"], errors="coerce")
+    # Redudant but not removing code until certain
+    # education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
+    # MMR_df_income["Year"] = pd.to_numeric(MMR_df_income["Year"], errors="coerce")
 
     # Plotting both dfs told only include 'World' entity
     education_df_income = education_df[education_df["Country"] == income_group]
@@ -341,6 +341,7 @@ def plot_high_low_income_scatter():
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.show()
 
+
 def plot_single_income(income_group, ax):
 
     education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
@@ -382,18 +383,72 @@ def plot_single_income(income_group, ax):
 # 100,000 by 2030
 # ---------------------------------------------------------------------
 
-# Call all df functions
+# ---------------------------------------------------------------------
+# Calculations/Values for graphs
+# ---------------------------------------------------------------------
 
-poverty_df = read_poverty_data()
-education_df = read_education_data()
-MMR_df = read_MMR_data()
+# Get 2023 MMR value
+# Get % of MMR that happen in low and low middle income countries
+def get_global_MMR_values():
+
+    mmr_world = MMR_df[MMR_df["Country"] == "World"]
+    mmr_2023_column = mmr_world[mmr_world["Year"] == 2023]
+    
+    MMR_df_income_2023 = MMR_df_income[MMR_df_income["Year"] == 2023]
+
+    lmic_mmr = MMR_df_income_2023[
+        MMR_df_income_2023["Income group"].isin(
+            ["Low income", "Lower middle income"]
+        )
+    ]["Mean_MMR"].sum()
+
+    total_mmr = MMR_df_income_2023["Mean_MMR"].sum()
+
+    percentage_lmic = (lmic_mmr / total_mmr) * 100
+
+
+    return mmr_2023_column, percentage_lmic
+
+
+# Get percentage of population living on less than $3 a day 
+def percentage_pop_poverty():
+    pov_world = poverty_df[poverty_df["Country"] == "World"]
+    pov_2023_column = pov_world[pov_world["Year"] == 2023]
+    return pov_2023_column
+    
+    
+
+
+# Call all df functions
+start_year = 1985
+max_year = 2023
+poverty_df = read_poverty_data(start_year, max_year)
+print(poverty_df)
+education_df = read_education_data(start_year, max_year)
+MMR_df = read_MMR_data(start_year, max_year)
 MMR_df_income = read_MMR_income_data()
+
+# print("Pov Min year:", poverty_df["Year"].min())
+# print("Pov Max year:", poverty_df["Year"].max())
+
+# print("Edu Min year:", education_df["Year"].min())
+# print("Edu Max year:", education_df["Year"].max())
+
+# print("MMR Min year:", MMR_df["Year"].min())
+# print("MMR Max year:", MMR_df["Year"].max())
 
 
 if __name__ == "__main__":
-   
+    
+     pov_2023_column = percentage_pop_poverty()
+     print (pov_2023_column)
+
+    #  mmr_2023_value, percentage_lmic = get_global_MMR_values()
+    #  print(f"MMR 2023 column is {mmr_2023_value}") 
+    #  print(f"Percentage of MMR in LMICs {percentage_lmic}")
     # # Plots scatter plot for poverty and MMR globally 
     # scatter_plot= plot_scatter_poverty_MMR()
+    # print(scatter_plot)
 
     # # Plots bubble plot for global data
     # bubble_plot= plot_bubble_plot()
@@ -404,7 +459,7 @@ if __name__ == "__main__":
     #     income_groups = plot_income_group_scatter(income_group)
     #     print(income_groups)
 
-    high_low_scatter = plot_high_low_income_scatter()
+    # high_low_scatter = plot_high_low_income_scatter()
 
     # plot = plot_time_income_mmr_series()
     # print(plot)
