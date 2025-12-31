@@ -4,6 +4,7 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
@@ -100,6 +101,13 @@ def read_MMR_income_data():
     return result
 
 
+def world_filters():
+    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
+    education_df_world = education_df[education_df["Country"] == "World"]
+    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
+
+    return poverty_df_world, education_df_world, MMR_df_world
+
 # ---------------------------------------------------------------------
 # PLOTS
 # ---------------------------------------------------------------------
@@ -108,26 +116,24 @@ def read_MMR_income_data():
 
 def plot_scatter_poverty_MMR():
 
-
-    # Plotting both dfs told only include 'World' entity
-    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
-    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
-
-
     # Merge Datasets
     merged_df = pd.merge(poverty_df_world , MMR_df_world, on=["Country", "Year"] )
 
     # X and Y values
+    X_1D = merged_df['PR'] * 100 # For lineregress
     X = merged_df[['PR']] * 100  # Double brackets makes it 2D
     Y = merged_df['MMR']
+
+    # Linear regression
+    slope, intercept, r_value, p_value, std_err = linregress(X_1D, Y)
 
     # Fit for linear regression
     model = LinearRegression()
     model.fit(X, Y)
 
+
     # Prediction for Y
     Y_pred = model.predict(X)
-
 
     # Plotting graph
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
@@ -141,11 +147,10 @@ def plot_scatter_poverty_MMR():
     plt.grid(True)
     plt.show()
 
-    r_value = r2_score(Y, Y_pred)
+    r_squared_value = r2_score(Y, Y_pred)
 
-    slope = model.coef_[0]
 
-    return slope 
+    return slope , r_value , r_squared_value
 
 
 # Funcion to create boxplots of income groups 
@@ -211,16 +216,6 @@ def plot_time_income_mmr_series():
 
 
 def plot_bubble_plot():
-    # Redudant but not removing code until certain
-    # # Makes values for Year consistent types and coerce sets invalid parsing to NaN
-    # poverty_df["Year"] = pd.to_numeric(poverty_df["Year"], errors="coerce")
-    # education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
-    # MMR_df["Year"] = pd.to_numeric(MMR_df["Year"], errors="coerce")
-
-    # Filter    
-    poverty_df_world = poverty_df[poverty_df["Country"] == "World"]
-    education_df_world = education_df[education_df["Country"] == "World"]
-    MMR_df_world = MMR_df[MMR_df["Country"] == "World"]
 
     # Merge Datasets
     merged_df = poverty_df_world.merge(MMR_df_world, on=["Country", "Year"])
@@ -279,10 +274,6 @@ def plot_time_global_mmr_series():
 
 # Plot based on income groups
 def plot_income_group_scatter(income_group):
-
-    # Redudant but not removing code until certain
-    # education_df["Year"] = pd.to_numeric(education_df["Year"], errors="coerce")
-    # MMR_df_income["Year"] = pd.to_numeric(MMR_df_income["Year"], errors="coerce")
 
     # Plotting both dfs told only include 'World' entity
     education_df_income = education_df[education_df["Country"] == income_group]
@@ -391,8 +382,7 @@ def plot_single_income(income_group, ax):
 # Get % of MMR that happen in low and low middle income countries
 def get_global_MMR_values():
 
-    mmr_world = MMR_df[MMR_df["Country"] == "World"]
-    mmr_2023_column = mmr_world[mmr_world["Year"] == 2023]
+    mmr_2023_column = MMR_df_world[MMR_df_world["Year"] == 2023]
     
     MMR_df_income_2023 = MMR_df_income[MMR_df_income["Year"] == 2023]
 
@@ -412,8 +402,7 @@ def get_global_MMR_values():
 
 # Get percentage of population living on less than $3 a day 
 def percentage_pop_poverty():
-    pov_world = poverty_df[poverty_df["Country"] == "World"]
-    pov_2023_column = pov_world[pov_world["Year"] == 2023]
+    pov_2023_column = poverty_df_world[poverty_df_world["Year"] == 2023]
     return pov_2023_column
     
     
@@ -422,33 +411,31 @@ def percentage_pop_poverty():
 # Call all df functions
 start_year = 1985
 max_year = 2023
+
 poverty_df = read_poverty_data(start_year, max_year)
-print(poverty_df)
 education_df = read_education_data(start_year, max_year)
 MMR_df = read_MMR_data(start_year, max_year)
 MMR_df_income = read_MMR_income_data()
 
-# print("Pov Min year:", poverty_df["Year"].min())
-# print("Pov Max year:", poverty_df["Year"].max())
 
-# print("Edu Min year:", education_df["Year"].min())
-# print("Edu Max year:", education_df["Year"].max())
-
-# print("MMR Min year:", MMR_df["Year"].min())
-# print("MMR Max year:", MMR_df["Year"].max())
-
+poverty_df_world, education_df_world, MMR_df_world = world_filters()
 
 if __name__ == "__main__":
     
-     pov_2023_column = percentage_pop_poverty()
-     print (pov_2023_column)
+    # pov_2023_column = percentage_pop_poverty()
+    # print (pov_2023_column)
 
-    #  mmr_2023_value, percentage_lmic = get_global_MMR_values()
-    #  print(f"MMR 2023 column is {mmr_2023_value}") 
-    #  print(f"Percentage of MMR in LMICs {percentage_lmic}")
+    # mmr_2023_value, percentage_lmic = get_global_MMR_values()
+    # print(f"MMR 2023 column is {mmr_2023_value}") 
+    # print(f"Percentage of MMR in LMICs {percentage_lmic}")
     # # Plots scatter plot for poverty and MMR globally 
-    # scatter_plot= plot_scatter_poverty_MMR()
-    # print(scatter_plot)
+
+    slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+    print(f"Slope for Global Poverty vs Global MMR: {slope}")
+    print(f"Correlation Coefficient for Global Poverty vs Global MMR: {correlation_coefficient}")
+    print(f"R squared value for Global Poverty vs Global MMR: {r_squared_value}")
+
+
 
     # # Plots bubble plot for global data
     # bubble_plot= plot_bubble_plot()

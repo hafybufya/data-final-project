@@ -3,6 +3,7 @@
 # ---------------------------------------------------------------------
 
 import unittest
+from unittest.mock import patch
 from mainCode import *
 import os
 
@@ -31,11 +32,20 @@ class my_unit_tests(unittest.TestCase):
         self.assertTrue( isinstance(MMR_df, pd.DataFrame))
         self.assertTrue( isinstance(MMR_df_income, pd.DataFrame))
 
-    # Checks if functions returns a value between -1 to 1
-    def test_scatter_corr_numeric(self):
-        result = plot_scatter_poverty_MMR()
-        self.assertTrue(-1 <= result <= 1)
-        
+    # === Checks if function returns a correlation and r squared value between -1 to 1 ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_corr_numeric(self, mock_show):
+        slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertTrue(-1 <= correlation_coefficient <= 1)
+        self.assertTrue(-1 <= r_squared_value <= 1)
+
+    # === Checks if function returns a correlation and r squared value between -1 to 1 ===
+    def test_df_world_only(self):
+        poverty_df_world, education_df_world, MMR_df_world = world_filters()
+        self.assertTrue((poverty_df_world["Country"] == "World").all())
+        self.assertTrue((education_df_world["Country"] == "World").all())
+        self.assertTrue((MMR_df_world["Country"] == "World").all())
+     
     # run the tests
 if __name__ == "__main__":
     unittest.main()
