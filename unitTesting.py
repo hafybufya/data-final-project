@@ -12,13 +12,30 @@ import os
 # ---------------------------------------------------------------------
 class my_unit_tests(unittest.TestCase):
 
-    # === Tests if the csvs file has been saved/exist ===
-    def test_csv_file_exists(self):
+# ---------------------------------------------------------------------
+# TESTING CSVS
+# ---------------------------------------------------------------------
+
+    # === Tests if the poverty csv file has been saved/exist ===
+    def test_csv_poverty_file_exists(self):
         self.assertTrue(os.path.isfile(poverty_csv_region))
+
+    # === Tests if the education csv file has been saved/exist ===
+    def test_csv_education_file_exists(self):
         self.assertTrue(os.path.isfile(education_csv))
+
+    # === Tests if the mmr csv file has been saved/exist ===
+    def test_csv_mmr_file_exists(self):
         self.assertTrue(os.path.isfile(mmr_csv))
+
+    # === Tests if the poverty mmr income file has been saved/exist ===
+    def test_csv_mmr_income_file_exists(self):    
         self.assertTrue(os.path.isfile(income_classification_csv))
     
+# ---------------------------------------------------------------------
+# TESTING DATAFRAMES
+# ---------------------------------------------------------------------
+
     # === Tests if the poverty_df has the right columns
     def test_df_poverty_headings(self):
         self.assertEqual(list(poverty_df), ['Country', 'Year', 'PR'])
@@ -35,38 +52,95 @@ class my_unit_tests(unittest.TestCase):
     def test_df_MMR_income_headings(self):
         self.assertEqual(list(MMR_df_income), ['Year', 'Income group', 'Mean_MMR'])
 
+    # === Tests if poverty read_functions returns a dataframe === 
+    def test_df_poverty_returned(self):
+        self.assertIsInstance(poverty_df, pd.DataFrame)
 
-    # === Tests if read_functions returns dataframes === 
-    def test_df_returned(self):
-        # From read_poverty_data() function
-        self.assertTrue( isinstance(poverty_df, pd.DataFrame))
-        # From read_education_data() function
-        self.assertTrue( isinstance(education_df, pd.DataFrame))
-        # From read_MMR_data() function
-        self.assertTrue( isinstance(MMR_df, pd.DataFrame))
-        self.assertTrue( isinstance(MMR_df_income, pd.DataFrame))
+    # === Tests if education read_functions returns a dataframe === 
+    def test_df_education_returned(self):
+        self.assertIsInstance(education_df, pd.DataFrame)
 
-    # === Checks if function returns a correlation and r squared value between -1 to 1 ===
+    # === Tests if MMR read_functions returns a dataframe === 
+    def test_df_MMR_returned(self):
+        self.assertIsInstance(MMR_df, pd.DataFrame)
+
+    # === Tests if MMR income read_functions returns a dataframe === 
+    def test_df_MMR_income_returned(self):    
+        self.assertIsInstance(MMR_df_income, pd.DataFrame)
+
+    # === Checks if all values in Country = 'World' in poverty_df_world ===
+    def test_df_world_poverty_only(self):
+        poverty_df_world, education_df_world, MMR_df_world = world_filters()
+        self.assertTrue((poverty_df_world["Country"] == "World").all())
+
+    # === Checks if all values in Country = 'World' in education_df_world ===
+    def test_df_world_education_only(self):
+        poverty_df_world, education_df_world, MMR_df_world = world_filters()       
+        self.assertTrue((education_df_world["Country"] == "World").all())
+ 
+    # === Checks if all values in Country = 'World' in MMR_df_world ===
+    def test_df_world_MMR_only(self):
+        poverty_df_world, education_df_world, MMR_df_world = world_filters()   
+        self.assertTrue((MMR_df_world["Country"] == "World").all())
+
+# ---------------------------------------------------------------------
+# TESTING GRAPHS
+# ---------------------------------------------------------------------
+
+# SCATTER PLOT
+    # === Checks if function returns a correlation is between -1 to 1 ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_corr_numeric(self, mock_show):
-        slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
         self.assertTrue(-1 <= correlation_coefficient <= 1)
-        self.assertTrue(-1 <= r_squared_value <= 1)
 
-    # === Checks if function returns a correlation and r squared value between -1 to 1 ===
-    def test_df_world_only(self):
-        poverty_df_world, education_df_world, MMR_df_world = world_filters()
-        self.assertTrue((poverty_df_world["Country"] == "World").all())
-        self.assertTrue((education_df_world["Country"] == "World").all())
-        self.assertTrue((MMR_df_world["Country"] == "World").all())
+    # === Checks if function returns a correlation is between 0 to 1 ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_rsquared_numeric(self, mock_show):
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertTrue(0 <= r_squared_value <= 1)
 
-    # === Checks if function returns a correlation and r squared value between -1 to 1 ===
-    def test_df_world_only(self):
-        poverty_df_world, education_df_world, MMR_df_world = world_filters()
-        self.assertTrue((poverty_df_world["Country"] == "World").all())
-        self.assertTrue((education_df_world["Country"] == "World").all())
-        self.assertTrue((MMR_df_world["Country"] == "World").all())
-     
+    # === Checks if merged_df merges correctly ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_merged_df(self, mock_show):
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertIn("PR", merged_df.columns)
+        self.assertIn("MMR", merged_df.columns)
+
+    # === Checks if X_1D is 1 dimensional ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_X_1D_df(self, mock_show):
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertEqual(X_1D.ndim, 1)
+
+    # === Checks if X_1D is 1 dimensional ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_X_1D_df(self, mock_show):
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertEqual(X_1D.ndim, 1)
+
+    # === Checks if X is 2 dimensional ===
+    @patch("matplotlib.pyplot.show")
+    def test_scatter_X_df(self, mock_show):
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        self.assertEqual(X.ndim, 2)
+
+#BOXPLOT
+    # === Tests if years in merged_df only contains target year 2023 ===
+    @patch("matplotlib.pyplot.show")
+    def test_box_plot_2023_merged_df(self, mock_show):
+        merged_df = box_plots()
+        self.assertTrue((merged_df["Year"] == 2023).all())
+
+
+
+    # === Tests if df merged correctly ===
+    @patch("matplotlib.pyplot.show")
+    def test_box_plot_merged_df(self, mock_show):
+        merged_df = box_plots()  
+        self.assertIn("MMR", merged_df.columns)
+        self.assertIn("Income group", merged_df.columns)   
+
     # run the tests
 if __name__ == "__main__":
     unittest.main()
