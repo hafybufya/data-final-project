@@ -125,13 +125,12 @@ class my_unit_tests(unittest.TestCase):
         X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
         self.assertEqual(X.ndim, 2)
 
-#BOXPLOT
+# BOX PLOT
     # === Tests if years in merged_df only contains target year 2023 ===
     @patch("matplotlib.pyplot.show")
     def test_box_plot_2023_merged_df(self, mock_show):
         merged_df = box_plots()
         self.assertTrue((merged_df["Year"] == 2023).all())
-
 
 
     # === Tests if df merged correctly ===
@@ -140,6 +139,74 @@ class my_unit_tests(unittest.TestCase):
         merged_df = box_plots()  
         self.assertIn("MMR", merged_df.columns)
         self.assertIn("Income group", merged_df.columns)   
+
+#GLOBAL MMR SERIES
+
+    # ===  Checks that df used in global mmr series ===
+    @patch("matplotlib.pyplot.show")
+    def test_mmr_series_sorted(self, mock_show):
+        result= plot_time_global_mmr_series()
+        self.assertTrue(
+        result["Year"].tolist() == sorted(result["Year"].tolist())
+    )
+        
+# INCOME GROUP SCATTER
+
+    # === Testing if df merged correctly ===
+    @patch("matplotlib.pyplot.show")
+    def test_income_group_scatter_merged_df(self, mock_show):
+        income_group = "Low income"
+        merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
+        self.assertIn("Mean_MMR", merged_df.columns)
+        self.assertIn("Income group", merged_df.columns)   
+
+    # === Checks if function returns a correlation is between -1 to 1 ===
+    @patch("matplotlib.pyplot.show")
+    def test_income_group_scatter_corr_numeric(self, mock_show):
+        income_group = "Low income"
+        merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
+        self.assertTrue(-1 <= r_value <= 1)
+
+    # === Checks if function returns a correlation is between 0 to 1 ===
+    @patch("matplotlib.pyplot.show")
+    def test_income_group_scatter_rsquared_numeric(self, mock_show):
+        income_group = "Low income"
+        merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
+        self.assertTrue(0 <= r_squared_value <= 1)
+
+
+# ---------------------------------------------------------------------
+# TESTING VALUES 
+# ---------------------------------------------------------------------
+    # === Checks if function returns a numeric value or float for 2023 MMR value ===
+    def test_get_global_MMR_returns_numeric_mmr(self):
+        mmr_2023, percentage_lmic = get_global_MMR_values()
+        self.assertIsInstance(mmr_2023, (int, float))
+
+    # === Checks if function returns a numeric value or float for percentage ===
+    def test_get_global_MMR_returns_numeric_percentage_lmic(self):
+        mmr_2023, percentage_lmic = get_global_MMR_values()
+        self.assertIsInstance(percentage_lmic, (int, float))
+
+    # === Checks if value returned is above 0 ===
+    def test_get_global_MMR_value_range_mmr(self):
+        mmr_2023, percentage_lmic = get_global_MMR_values()
+        self.assertGreaterEqual(mmr_2023, 0)
+
+    # === Checks if function returns a percentage between 0 to 100 ===
+    def test_get_global_MMR_value_percentage_lmic(self):
+        mmr_2023, percentage_lmic = get_global_MMR_values()
+        self.assertTrue(0 <= percentage_lmic <= 100)
+
+    # === Checks if function returns a numeric value or float for poverty ===
+    def test_get_global_MMR_returns_numeric_percentage_poverty_pop(self):
+        pov_2023_value = percentage_pop_poverty()
+        self.assertIsInstance(pov_2023_value, (int, float))
+
+    # === Checks if value returned if value returned is between 0 to 100 ===
+    def test_get_global_MMR_value_range_poverty_pop(self):
+        pov_2023_value =  percentage_pop_poverty()
+        self.assertTrue(0 <= pov_2023_value <= 100)
 
     # run the tests
 if __name__ == "__main__":
