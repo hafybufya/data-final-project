@@ -148,8 +148,8 @@ def plot_scatter_poverty_MMR():
 
     r_squared_value = r2_score(Y, Y_pred)
 
-
-    return slope , r_value , r_squared_value
+    # Returning slope for statement for every 1% increase in poverty, MMR increases by slope amount
+    return X_1D, X, merged_df, slope, r_value, r_squared_value
 
 
 # Funcion to create boxplots of income groups 
@@ -183,7 +183,8 @@ def box_plots():
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
     plt.show()
-    return merged_df.groupby("Income group")["MMR"].describe()
+
+    return merged_df
 
 
 def plot_time_income_mmr_series():
@@ -429,10 +430,10 @@ if __name__ == "__main__":
     # print(f"Percentage of MMR in LMICs {percentage_lmic}")
     # # Plots scatter plot for poverty and MMR globally 
 
-    slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
-    print(f"Slope for Global Poverty vs Global MMR: {slope}")
-    print(f"Correlation Coefficient for Global Poverty vs Global MMR: {correlation_coefficient}")
-    print(f"R squared value for Global Poverty vs Global MMR: {r_squared_value}")
+    # X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+    # print(f"Slope for Global Poverty vs Global MMR: {slope}")
+    # print(f"Correlation Coefficient for Global Poverty vs Global MMR: {correlation_coefficient}")
+    # print(f"R squared value for Global Poverty vs Global MMR: {r_squared_value}")
 
 
 
@@ -450,5 +451,5 @@ if __name__ == "__main__":
     # plot = plot_time_income_mmr_series()
     # print(plot)
 
-    # box_plot = box_plots()
-    # print(box_plot)
+    box_plot = box_plots()
+    print(box_plot)
