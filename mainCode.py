@@ -10,8 +10,7 @@ from sklearn.metrics import r2_score
 
 # CSVs used in programs defined
 csv_folder = 'data'
-poverty_csv_country = f'{csv_folder}/poverty_country.csv'
-poverty_csv_world = f'{csv_folder}/poverty_region.csv'
+poverty_csv_region = f'{csv_folder}/poverty_region.csv'
 education_csv = f'{csv_folder}/education.csv'
 mmr_csv= f'{csv_folder}/maternal_mortality_rate.csv'
 income_classification_csv = f'{csv_folder}/income_group_classification.csv'
@@ -26,7 +25,7 @@ income_classification_csv = f'{csv_folder}/income_group_classification.csv'
 
 def read_poverty_data(start_year, end_year):
 
-    poverty_df = pd.read_csv(poverty_csv_world)
+    poverty_df = pd.read_csv(poverty_csv_region)
     poverty_df =  poverty_df[['region_name', 'reporting_year', 'headcount']].copy()
 
     poverty_df = poverty_df.rename(columns={
