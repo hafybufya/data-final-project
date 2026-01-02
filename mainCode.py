@@ -267,7 +267,15 @@ def plot_time_global_mmr_series():
     plt.legend()
     plt.show()
 
-    return MMR_df_world_sorted
+    world_mmr_1985_value = MMR_df_world_sorted.loc[MMR_df_world_sorted["Year"] == 1985, "MMR"].iloc[0]
+    world_mmr_2023_value = MMR_df_world_sorted.loc[MMR_df_world_sorted["Year"] == 2023, "MMR"].iloc[0]
+
+    result= ((world_mmr_2023_value - world_mmr_1985_value)/ world_mmr_1985_value)* 100
+
+    return result
+
+
+    
 
 
 # Plot based on income groups
@@ -369,6 +377,30 @@ def plot_single_income(income_group, ax):
 
     ax.grid(True)
 
+
+def nigeria_mmr():
+
+    MMR_df_nigeria = MMR_df[MMR_df["Country"] == "Nigeria"].sort_values("Year")
+    # Sorts world data
+    MMR_df_world_sorted = MMR_df_world.sort_values("Year")
+    
+    plt.title(" Time Series on Global Maternal Moratlity Rate (1985-2023)")  
+    plt.xlabel('Year')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+
+        # Plot Nigeria
+    plt.plot(MMR_df_nigeria["Year"], MMR_df_nigeria["MMR"], label="Nigeria"
+    )
+    plt.legend()
+    plt.show()
+
+    nigeria_mmr_1985_value = MMR_df_nigeria.loc[MMR_df_nigeria["Year"] == 1985, "MMR"].iloc[0]
+    nigeria_mmr_2023_value = MMR_df_nigeria.loc[MMR_df_nigeria["Year"] == 2023, "MMR"].iloc[0]
+
+    result= ((nigeria_mmr_2023_value - nigeria_mmr_1985_value)/ nigeria_mmr_1985_value)* 100
+
+    return result
+
 # ---------------------------------------------------------------------
 # Estimating if UN will meet their goal of  7 maternal deaths per 
 # 100,000 by 2030
@@ -405,8 +437,6 @@ def percentage_pop_poverty():
     pov_2023_value = poverty_df_world.loc[poverty_df_world["Year"] == 2023, "PR"].iloc[0]
     return pov_2023_value * 100
     
-    
-
 
 # Call all df functions
 start_year = 1985
@@ -422,8 +452,14 @@ poverty_df_world, education_df_world, MMR_df_world = world_filters()
 
 if __name__ == "__main__":
     
-    pov_2023_column = percentage_pop_poverty()
-    print (pov_2023_column)
+    # pov_2023_column = percentage_pop_poverty()
+    # print (pov_2023_column)
+
+    # plot_nigeria_mmr = nigeria_mmr()
+    #print(f"Nigeria percentage change of mmr {plot_nigeria_mmr}")
+
+    plot_time_global_mmr_series= plot_time_global_mmr_series()
+    print(f"World percentage change of mmr {plot_time_global_mmr_series}")
 
     # mmr_2023_value, percentage_lmic = get_global_MMR_values()
     # print(f"MMR 2023 value is {mmr_2023_value}") 
