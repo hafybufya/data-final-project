@@ -44,13 +44,13 @@ class my_unit_tests(unittest.TestCase):
     def test_df_education_headings(self):
         self.assertEqual(list(education_df), ['Country', 'Year', 'PCR'])
 
-    # === Tests if the MMR_df has the right columns
-    def test_df_MMR_headings(self):
-        self.assertEqual(list(MMR_df), ['Year', 'Country', 'MMR'])
+    # === Tests if the mmr_df has the right columns
+    def test_df_mmr_headings(self):
+        self.assertEqual(list(mmr_df), ['Year', 'Country', 'MMR'])
 
-    # === Tests if the MMR_df_income has the right columns
-    def test_df_MMR_income_headings(self):
-        self.assertEqual(list(MMR_df_income), ['Year', 'Income group', 'Mean_MMR'])
+    # === Tests if the mmr_df_income has the right columns
+    def test_df_mmr_income_headings(self):
+        self.assertEqual(list(mmr_df_income), ['Year', 'Income group', 'Mean_MMR'])
 
     # === Tests if poverty read_functions returns a dataframe === 
     def test_df_poverty_returned(self):
@@ -60,28 +60,28 @@ class my_unit_tests(unittest.TestCase):
     def test_df_education_returned(self):
         self.assertIsInstance(education_df, pd.DataFrame)
 
-    # === Tests if MMR read_functions returns a dataframe === 
-    def test_df_MMR_returned(self):
-        self.assertIsInstance(MMR_df, pd.DataFrame)
+    # === Tests if mmr read_functions returns a dataframe === 
+    def test_df_mmr_returned(self):
+        self.assertIsInstance(mmr_df, pd.DataFrame)
 
-    # === Tests if MMR income read_functions returns a dataframe === 
-    def test_df_MMR_income_returned(self):    
-        self.assertIsInstance(MMR_df_income, pd.DataFrame)
+    # === Tests if mmr income read_functions returns a dataframe === 
+    def test_df_mmr_income_returned(self):    
+        self.assertIsInstance(mmr_df_income, pd.DataFrame)
 
     # === Checks if all values in Country = 'World' in poverty_df_world ===
     def test_df_world_poverty_only(self):
-        poverty_df_world, education_df_world, MMR_df_world = world_filters()
+        poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "World")
         self.assertTrue((poverty_df_world["Country"] == "World").all())
 
     # === Checks if all values in Country = 'World' in education_df_world ===
     def test_df_world_education_only(self):
-        poverty_df_world, education_df_world, MMR_df_world = world_filters()       
+        poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "World")       
         self.assertTrue((education_df_world["Country"] == "World").all())
  
-    # === Checks if all values in Country = 'World' in MMR_df_world ===
-    def test_df_world_MMR_only(self):
-        poverty_df_world, education_df_world, MMR_df_world = world_filters()   
-        self.assertTrue((MMR_df_world["Country"] == "World").all())
+    # === Checks if all values in Country = 'World' in mmr_df_world ===
+    def test_df_world_mmr_only(self):
+        poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "World") 
+        self.assertTrue((mmr_df_world["Country"] == "World").all())
 
 # ---------------------------------------------------------------------
 # TESTING GRAPHS
@@ -91,38 +91,38 @@ class my_unit_tests(unittest.TestCase):
     # === Checks if function returns a correlation is between -1 to 1 ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_corr_numeric(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertTrue(-1 <= correlation_coefficient <= 1)
 
     # === Checks if function returns a correlation is between 0 to 1 ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_rsquared_numeric(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertTrue(0 <= r_squared_value <= 1)
 
     # === Checks if merged_df merges correctly ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_merged_df(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertIn("PR", merged_df.columns)
         self.assertIn("MMR", merged_df.columns)
 
     # === Checks if X_1D is 1 dimensional ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_X_1D_df(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertEqual(X_1D.ndim, 1)
 
     # === Checks if X_1D is 1 dimensional ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_X_1D_df(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertEqual(X_1D.ndim, 1)
 
     # === Checks if X is 2 dimensional ===
     @patch("matplotlib.pyplot.show")
     def test_scatter_X_df(self, mock_show):
-        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_MMR()
+        X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
         self.assertEqual(X.ndim, 2)
 
 # BOX PLOT
@@ -140,7 +140,7 @@ class my_unit_tests(unittest.TestCase):
         self.assertIn("MMR", merged_df.columns)
         self.assertIn("Income group", merged_df.columns)   
 
-#GLOBAL MMR SERIES
+#GLOBAL mmr SERIES
 
     # ===  Checks that df used in global mmr series ===
     @patch("matplotlib.pyplot.show")
@@ -178,33 +178,33 @@ class my_unit_tests(unittest.TestCase):
 # ---------------------------------------------------------------------
 # TESTING VALUES 
 # ---------------------------------------------------------------------
-    # === Checks if function returns a numeric value or float for 2023 MMR value ===
-    def test_get_global_MMR_returns_numeric_mmr(self):
-        mmr_2023, percentage_lmic = get_global_MMR_values()
+    # === Checks if function returns a numeric value or float for 2023 mmr value ===
+    def test_get_global_mmr_returns_numeric_mmr(self):
+        mmr_2023, percentage_lmic = get_global_mmr_values()
         self.assertIsInstance(mmr_2023, (int, float))
 
     # === Checks if function returns a numeric value or float for percentage ===
-    def test_get_global_MMR_returns_numeric_percentage_lmic(self):
-        mmr_2023, percentage_lmic = get_global_MMR_values()
+    def test_get_global_mmr_returns_numeric_percentage_lmic(self):
+        mmr_2023, percentage_lmic = get_global_mmr_values()
         self.assertIsInstance(percentage_lmic, (int, float))
 
     # === Checks if value returned is above 0 ===
-    def test_get_global_MMR_value_range_mmr(self):
-        mmr_2023, percentage_lmic = get_global_MMR_values()
+    def test_get_global_mmr_value_range_mmr(self):
+        mmr_2023, percentage_lmic = get_global_mmr_values()
         self.assertGreaterEqual(mmr_2023, 0)
 
     # === Checks if function returns a percentage between 0 to 100 ===
-    def test_get_global_MMR_value_percentage_lmic(self):
-        mmr_2023, percentage_lmic = get_global_MMR_values()
+    def test_get_global_mmr_value_percentage_lmic(self):
+        mmr_2023, percentage_lmic = get_global_mmr_values()
         self.assertTrue(0 <= percentage_lmic <= 100)
 
     # === Checks if function returns a numeric value or float for poverty ===
-    def test_get_global_MMR_returns_numeric_percentage_poverty_pop(self):
+    def test_get_global_mmr_returns_numeric_percentage_poverty_pop(self):
         pov_2023_value = percentage_pop_poverty()
         self.assertIsInstance(pov_2023_value, (int, float))
 
     # === Checks if value returned if value returned is between 0 to 100 ===
-    def test_get_global_MMR_value_range_poverty_pop(self):
+    def test_get_global_mmr_value_range_poverty_pop(self):
         pov_2023_value =  percentage_pop_poverty()
         self.assertTrue(0 <= pov_2023_value <= 100)
 
