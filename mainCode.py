@@ -160,7 +160,6 @@ def read_mmr_income_data():
 
 #=== WORLD FILTERS ===
 def world_filters(column, world):
-
     """
 
     Filters each df by world entity 
@@ -241,6 +240,49 @@ def plot_scatter_poverty_mmr():
     # Returning slope for statement for every 1% increase in poverty, mmr increases by slope amount
     return X_1D, X, merged_df, slope, r_value, r_squared_value
 
+#=== GlOBAL BUBBLE PLOT ===
+def plot_bubble_plot():
+
+    """
+    
+    Creates a bubbleplot for poverty, education rate and MMRR
+
+    """
+    # Merge Datasets
+    merged_df = poverty_df_world.merge(mmr_df_world, on=["Country", "Year"])
+    merged_df = merged_df.merge(education_df_world, on=["Country", "Year"])
+
+    # X and Y values
+    X = merged_df[['PR']] * 100  # Double brackets makes it 2D
+    Y = merged_df['MMR']
+
+    # Bubbles
+    bubbles = merged_df['PCR']
+    
+
+    # Fit for linear regression
+    model = LinearRegression()
+    model.fit(X, Y)
+
+    # Prediction for Y
+    Y_pred = model.predict(X)
+
+    # Plotting graph
+    plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
+    scatter_plt= plt.scatter(X, Y,  alpha= 0.5, s=65, c=bubbles, cmap='winter_r', label='Data Points') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+
+    # A color bar to show GDP scaled
+    cbar = plt.colorbar(scatter_plt)
+    cbar.set_label('Primary completion rate, total (%)', fontsize=10)
+    plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
+    plt.xlabel('Poverty Rate %')
+    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    txt="Bubble Plot showing the relationship between Poverty Rate, Maternal Mortality Rate and Education Completion on a Global Scale."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    plt.grid(True)
+    plt.show()
+
 
 #=== BOXPLOT FOR 2023 VALUES ===
 def box_plots():
@@ -312,84 +354,11 @@ def plot_time_income_mmr_series():
             label=income_group
         )
 
-    plt.title(f"{income_group}: Time Series on Global Maternal Moratlity Rate (1985-2023) ")  
+    plt.title(f"{income_group}: Time Series on Global Maternal Moratlity Rate {start_year}-{max_year}")  
     plt.xlabel('Year')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
     plt.show()
-
-
-#=== GlOBAL BUBBLE PLOT ===
-def plot_bubble_plot():
-
-    """
-    
-    Creates a bubbleplot for poverty, education rate and MMRR
-
-    """
-    # Merge Datasets
-    merged_df = poverty_df_world.merge(mmr_df_world, on=["Country", "Year"])
-    merged_df = merged_df.merge(education_df_world, on=["Country", "Year"])
-
-    # X and Y values
-    X = merged_df[['PR']] * 100  # Double brackets makes it 2D
-    Y = merged_df['MMR']
-
-    # Bubbles
-    bubbles = merged_df['PCR']
-    
-
-    # Fit for linear regression
-    model = LinearRegression()
-    model.fit(X, Y)
-
-    # Prediction for Y
-    Y_pred = model.predict(X)
-
-    # Plotting graph
-    plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
-    scatter_plt= plt.scatter(X, Y,  alpha= 0.5, s=65, c=bubbles, cmap='winter_r', label='Data Points') 
-    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
-
-    # A color bar to show GDP scaled
-    cbar = plt.colorbar(scatter_plt)
-    cbar.set_label('Primary completion rate, total (%)', fontsize=10)
-    plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
-    plt.xlabel('Poverty Rate %')
-    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt="Bubble Plot showing the relationship between Poverty Rate, Maternal Mortality Rate and Education Completion on a Global Scale."
-    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
-    plt.grid(True)
-    plt.show()
-
-
-#=== GlOBAL MMR TIMESERIES PLOT ===
-def plot_time_global_mmr_series():
-  
-    """
-    
-    Creates a global timeseries for MMR
-
-§   """
-
-    mmr_df_world_sorted = mmr_df_world.sort_values("Year") # Organises Year to prevent spaghetti time series
-
-    x =  mmr_df_world_sorted["Year"]
-    y =  mmr_df_world_sorted["MMR"] 
-    plt.title(" Time Series on Global Maternal Moratlity Rate (1985-2023)")  
-    plt.xlabel('Year')
-    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    plt.plot(x, y)
-    plt.legend()
-    plt.show()
-
-    #WHAT IS THIS CALCING??
-    world_mmr_1985_value = mmr_df_world_sorted.loc[mmr_df_world_sorted["Year"] == 1985, "MMR"].iloc[0]
-    world_mmr_2023_value = mmr_df_world_sorted.loc[mmr_df_world_sorted["Year"] == 2023, "MMR"].iloc[0]
-
-    result= ((world_mmr_2023_value - world_mmr_1985_value)/ world_mmr_1985_value)* 100
-
-    return mmr_df_world_sorted
 
 
 #=== INCOME GROUP SCATTER PLOT ===
@@ -451,8 +420,14 @@ def plot_income_group_scatter(income_group):
     return merged_df, r_value, r_squared_value
 
 
+#=== HIGH LOW INCOME SCATTER PLOTS ====
 def plot_high_low_income_scatter():
+    """
 
+    Places both high income and low income scatter on the same figure 
+    allowing for comparison of education rate and MMR.
+    
+    """
     fig, (ax_high, ax_low) = plt.subplots(1, 2, figsize=(15, 6))
 
     # high income
@@ -464,11 +439,24 @@ def plot_high_low_income_scatter():
     plt.tight_layout()
     txt="Scatter Plot showing the relationship between Education Completion and Maternal Mortality Rate in High and Low Income Groups."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    plt.legend()
     plt.show()
 
 
+#=== INVIDIUALLY PLOT INCOME GROUP ===
 def plot_single_income(income_group, ax):
+    """
 
+    Helper function for plot_high_low_income_scatter()
+    Plots a scatter plot showing the relationship between 
+    education rate and MMR for a specified income group.
+
+    Paramaters
+    -------
+    income_group : str, filters 'Country' column for income_group
+    ax           : matplotlib.axes.Axes, Matplotlib axis on which the plot is drawn.
+
+    """
 
     education_df_income = education_df[education_df["Country"] == income_group]
     mmr_income = mmr_df_income[mmr_df_income["Income group"] == income_group]
@@ -502,42 +490,95 @@ def plot_single_income(income_group, ax):
     ax.grid(True)
 
 
-def nigeria_mmr():
+#=== WORLD NIGERIA SCATTER PLOT ===
+def plot_world_nigeria_timeseries():
+    """
 
-    mmr_df_nigeria = mmr_df[mmr_df["Country"] == "Nigeria"].sort_values("Year")
-    # Sorts world data
-    mmr_df_world_sorted = mmr_df_world.sort_values("Year")
+    Places both World and Nigeria scatter on the same figure 
+    allowing for comparison between two regions
+
+    Returns
+    -------
+    world_change.  : float, % change in MMR from start to end year globally
+    nigeria_change : float, % change in MMR from start to end year in Nigeria
+
+    """
+
+    fig, (ax_world, ax_nigeria) = plt.subplots(1, 2, figsize=(15, 6))
+
+    # high income
+    world_change = plot_timeseries_plot("World", ax_world)
+
+    # low income
+    nigeria_change = plot_timeseries_plot("Nigeria", ax_nigeria)
+
+    ax_world.legend()
+    ax_nigeria.legend()
     
-    plt.title(" Time Series on Global Maternal Moratlity Rate (1985-2023)")  
-    plt.xlabel('Year')
-    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-
-        # Plot Nigeria
-    plt.plot(mmr_df_nigeria["Year"], mmr_df_nigeria["MMR"], label="Nigeria"
-    )
-    plt.legend()
+    plt.tight_layout()
+    txt="Timeseries showing Maternal Mortality Ratio overtime Globally and in Nigeria."
+    plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    
     plt.show()
 
-    nigeria_mmr_1985_value = mmr_df_nigeria.loc[mmr_df_nigeria["Year"] == 1985, "MMR"].iloc[0]
-    nigeria_mmr_2023_value = mmr_df_nigeria.loc[mmr_df_nigeria["Year"] == 2023, "MMR"].iloc[0]
+    return world_change, nigeria_change
 
-    result= ((nigeria_mmr_2023_value - nigeria_mmr_1985_value)/ nigeria_mmr_1985_value)* 100
 
-    return result
+#=== INVIDIUALL PLOT REGION ===
+def plot_timeseries_plot(country, ax):
+    """
+
+    Helper function for plot_world_nigeria_timeseries()
+    Plots a timeseries plot showing the relationship between 
+    MMR for a specified region
+
+    Paramaters
+    -------
+    country : str, filters 'Country' column for country i.e. World and Nigera
+    ax           : matplotlib.axes.Axes, Matplotlib axis on which the plot is drawn.
+
+    Returns
+    -------
+    result  : float, % change in MMR from start to end year based on passed in 'country'
+    """
+
+    mmr_df_filtered = mmr_df[mmr_df["Country"] == country].sort_values("Year")   
+    mmr_df_filtered = mmr_df_filtered.dropna(subset=['Year', 'MMR'])
+
+    ax.plot(mmr_df_filtered['Year'], mmr_df_filtered['MMR'], label= country
+    )
+
+    ax.set_title(f"Time Series on Global Maternal Moratlity Rate {start_year}-{max_year}")
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Maternal Mortality Rate (Deaths per 100,000)')
+    ax.grid(True)
+
+    # Percentage change from start to end year
+    mmr_min_value = mmr_df_filtered.loc[mmr_df_filtered["Year"] == start_year, "MMR"].iloc[0]
+    mmr_max_value = mmr_df_filtered.loc[mmr_df_filtered["Year"] == max_year, "MMR"].iloc[0]
+
+    result= ((mmr_max_value - mmr_min_value)/ mmr_min_value)* 100
+
+    # float() to convert from np.float64 to a normal float
+    return float(result)
+
+
 
 # ---------------------------------------------------------------------
-# Estimating if UN will meet their goal of  7 maternal deaths per 
-# 100,000 by 2030
+# Calculations
 # ---------------------------------------------------------------------
 
-# ---------------------------------------------------------------------
-# Calculations/Values for graphs
-# ---------------------------------------------------------------------
-
-# Get 2023 mmr value
-# Get % of mmr that happen in low and low middle income countries
+#=== GLOBAL MMR CALCULATIONS ===
 def get_global_mmr_values():
+    """
+    Calculates global MMR values to be included in the report
 
+    Returns
+    -------
+    mmr_2023_value  : float, returns global MMR value in 2023
+    percentage_lmic : float, returns the % of maternal deaths that occur in LMICs
+
+    """
     mmr_2023_value = mmr_df_world.loc[mmr_df_world["Year"] == 2023, "MMR"].iloc[0]
     
     mmr_df_income_2023 = mmr_df_income[mmr_df_income["Year"] == 2023]
@@ -551,27 +592,33 @@ def get_global_mmr_values():
     total_mmr = mmr_df_income_2023["Mean_MMR"].sum()
 
     percentage_lmic = (lmic_mmr / total_mmr) * 100
-
-
     return mmr_2023_value, percentage_lmic
 
 
-# Get percentage of population living on less than $3 a day 
+#=== PERCENTAGE IN POVERTY ===
 def percentage_pop_poverty():
+    """
+    Calculates percentage of the population living in poverty in 2023
+
+    Returns
+    -------
+    pov_2023_value  : float, returns %
+
+    """
     pov_2023_value = poverty_df_world.loc[poverty_df_world["Year"] == 2023, "PR"].iloc[0]
     return pov_2023_value * 100
-    
 
-def reaching_UN_goal_mmr_global():
-    year = 2030
-    mmr_2023_value = mmr_df_world.loc[mmr_df_world["Year"] == 2023, "MMR"].iloc[0]
-    goal = 70
-    time_period = year - 2023
-    rate_reach_goal_global = (mmr_2023_value - goal)/time_period
-    return rate_reach_goal_global
 
 # Prints each country with highest MMR each year
 def highest_mmr_by_year():
+    """
+    Prints which country has the highest MMR for the period of data 
+
+    Returns
+    -------
+    highest  : df, containg Year, Country and MMR
+
+    """
     highest = (
         mmr_df.loc[mmr_df.groupby("Year")["MMR"].idxmax()]
         .sort_values("Year")
@@ -595,17 +642,12 @@ poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "W
 
 if __name__ == "__main__":
     
-    rate_reach_goal_global = reaching_UN_goal_mmr_global()
-    print(rate_reach_goal_global)
-
     pov_2023_column = percentage_pop_poverty()
     print (pov_2023_column)
 
-    plot_nigeria_mmr = nigeria_mmr()
-    print(f"Nigeria percentage change of mmr {plot_nigeria_mmr}")
+    plot_world_nigeria_mmr = plot_world_nigeria_timeseries()
+    print(plot_world_nigeria_mmr)
 
-    plot_time_global_mmr_series= plot_time_global_mmr_series()
-    print(f"World percentage change of mmr {plot_time_global_mmr_series}")
 
     mmr_2023_value, percentage_lmic = get_global_mmr_values()
     print(f"mmr 2023 value is {mmr_2023_value}") 
