@@ -140,15 +140,21 @@ class my_unit_tests(unittest.TestCase):
         self.assertIn("MMR", merged_df.columns)
         self.assertIn("Income group", merged_df.columns)   
 
-#GLOBAL mmr SERIES
+# GLOBAL MMR SERIES
 
-    # ===  Checks that df used in global mmr series ===
+    # ===  Checks world_change returned in global/nigeria mmr series is numeric ===
     @patch("matplotlib.pyplot.show")
-    def test_mmr_series_sorted(self, mock_show):
-        result= plot_time_global_mmr_series()
-        self.assertTrue(
-        result["Year"].tolist() == sorted(result["Year"].tolist())
-    )
+    def test_mmr_series_world(self, mock_show):
+        world_change, nigeria_change = plot_world_nigeria_timeseries()
+        self.assertIsInstance(world_change, (int, float))
+
+    # ===  Checks nigeria_change returned in global/nigeria mmr series is numeric ===
+    @patch("matplotlib.pyplot.show")
+    def test_mmr_series_nigeria(self, mock_show):
+        world_change, nigeria_change = plot_world_nigeria_timeseries()
+        self.assertIsInstance(nigeria_change, (int, float))
+
+    
         
 # INCOME GROUP SCATTER
 
