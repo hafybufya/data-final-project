@@ -232,10 +232,13 @@ def plot_scatter_poverty_mmr():
     plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt="Scatter Plot showing the relationship between global poverty rate and maternal mortality rate on a Global Scale."
+    txt="Scatter Plot showing the relationship between global poverty rate and maternal mortality ratio on a Global Scale."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.legend()
+    plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.15)
     plt.savefig(f"{figures_directory}/scatter_global_poverty_vs_mmr.png")
     plt.show()
 
@@ -286,9 +289,13 @@ def plot_bubble_plot():
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
-    txt="Bubble Plot showing the relationship between poverty rate, education completion and maternal mortality rate on a Global Scale."
+    txt="Bubble Plot showing the relationship between poverty rate, education completion and maternal mortality ratio on a Global Scale."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
+    plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.15)
+
     plt.savefig(f"{figures_directory}/bubble_global_poverty_vs_mmr.png")
     plt.show()
 
@@ -327,48 +334,17 @@ def box_plots():
     0.02, 70, 'mmr = 70',
     verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
 
-    txt="Box Plots showing the distribution of maternal mortality in different income group in 2023. Each data point represent a country."
+    txt="Box Plots showing the distribution of maternal mortality ratio in different income group in 2023. Each data point represent a country."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
+    plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.15)
+
     plt.savefig(f"{figures_directory}/boxplot_income_education_vs_mmr.png")
     plt.show()
 
     return merged_df
-
-
-#=== INCOME GROUP MMR TIME SERIES ===
-def plot_time_income_mmr_series():
-
-    """
-
-    Creates a timeseries plotting MMR by income group
-
-    """
-
-    mmr_df = mmr_df_income.copy()
-    mmr_df["Year"] = pd.to_numeric(mmr_df["Year"], errors="coerce")
-    mmr_df = mmr_df.sort_values("Year") # Organises Year to prevent spaghetti time series
-
-    df = mmr_df.dropna(subset=["Year", "Mean_MMR", "Income group"])
-
-    income_groups = mmr_df["Income group"].unique()
-
-    for income_group in income_groups:
-        group_df = df[df["Income group"] == income_group]
-        group_df = group_df.sort_values("Year")
-
-        plt.plot(
-            group_df["Year"],
-            group_df["Mean_MMR"],
-            label=income_group
-        )
-
-    plt.title(f"{income_group}: Time Series on Global Maternal Moratlity Rate {start_year}-{max_year}")  
-    plt.xlabel('Year')
-    plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    plt.legend()
-    plt.savefig(f"{figures_directory}/timeseries_income_mmr.png")
-    plt.show()
 
 
 #=== INCOME GROUP SCATTER PLOT ===
@@ -420,10 +396,14 @@ def plot_income_group_scatter(income_group):
     plt.title(f'{income_group}: Primary Completion Rate vs Mean Maternal Mortality Rate')
     plt.xlabel('Primary completion rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt=f"Scatter Plot showing the relationship between education rate and mean maternal mortality for {income_group}."
+    txt=f"Scatter Plot showing the relationship between education rate and mean maternal mortality ratio for {income_group}."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.legend()
+    plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.15)
+
     plt.savefig(f"{figures_directory}/timeseries_{income_group}_mmr.png")
     plt.show()
 
@@ -451,8 +431,12 @@ def plot_high_low_income_scatter():
     ax_high.legend()
     ax_low.legend() 
     plt.tight_layout()
-    txt="Scatter Plot showing the relationship between education completion and maternal mortality rate in High and Low Income Groups."
+    txt="Scatter Plot showing the relationship between education completion and maternal mortality ratio in High and Low Income Groups."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
+    plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.15)
+
     plt.savefig(f"{figures_directory}/scatter_high_low_pov_mmr.png")
     plt.show()
 
@@ -536,6 +520,8 @@ def plot_world_nigeria_timeseries():
     ax_nigeria.legend()
     
     plt.tight_layout()
+    # Reserve space at the bottom for caption
+    plt.subplots_adjust(bottom=0.10)
 
     txt="Timeseries showing maternal mortality ratio overtime Globally and in Nigeria."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
@@ -663,38 +649,36 @@ poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "W
 
 if __name__ == "__main__":
     
-    # pov_2023_column = percentage_pop_poverty()
-    # print (pov_2023_column)
+    pov_2023_column = percentage_pop_poverty()
+    print (pov_2023_column)
 
     plot_world_nigeria_mmr = plot_world_nigeria_timeseries()
     print(plot_world_nigeria_mmr)
 
 
-    # mmr_2023_value, percentage_lmic = get_global_mmr_values()
-    # print(f"mmr 2023 value is {mmr_2023_value}") 
-    # print(f"Percentage of mmr in LMICs {percentage_lmic}")
-    # # Plots scatter plot for poverty and mmr globally 
+    mmr_2023_value, percentage_lmic = get_global_mmr_values()
+    print(f"mmr 2023 value is {mmr_2023_value}") 
+    print(f"Percentage of mmr in LMICs {percentage_lmic}")
+    # Plots scatter plot for poverty and mmr globally 
 
-    # X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
-    # print(f"Slope for Global Poverty vs Global mmr: {slope}")
-    # print(f"Correlation Coefficient for Global Poverty vs Global mmr: {correlation_coefficient}")
-    # print(f"R squared value for Global Poverty vs Global mmr: {r_squared_value}")
+    X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
+    print(f"Slope for Global Poverty vs Global mmr: {slope}")
+    print(f"Correlation Coefficient for Global Poverty vs Global mmr: {correlation_coefficient}")
+    print(f"R squared value for Global Poverty vs Global mmr: {r_squared_value}")
 
-    # # Plots bubble plot for global data
-    # bubble_plot= plot_bubble_plot()
+    # Plots bubble plot for global data
+    bubble_plot= plot_bubble_plot()
 
-    # # Plots Income groups graphs
-    # income_groups = mmr_df_income["Income group"].unique()
-    # for income_group in income_groups:
-    #     merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
-    #     print(f"{income_group}'s correlation is : {r_value}")
+    # Plots Income groups graphs
+    income_groups = mmr_df_income["Income group"].unique()
+    for income_group in income_groups:
+        merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
+        print(f"{income_group}'s correlation is : {r_value}")
 
-    # high_low_scatter = plot_high_low_income_scatter()
+    high_low_scatter = plot_high_low_income_scatter()
 
-    # plot = plot_time_income_mmr_series()
-    # print(plot)
 
-    # box_plot = box_plots()
-    # print(box_plot)
+    box_plot = box_plots()
+    print(box_plot)
 
-    # highest = highest_mmr_by_year()
+    highest = highest_mmr_by_year()
