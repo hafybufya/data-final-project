@@ -8,6 +8,8 @@ from scipy.stats import linregress
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
+# Figures directoy name
+figures_directory = 'figures'
 # CSVs used in programs defined
 csv_folder = 'data'
 poverty_csv_region = f'{csv_folder}/poverty_region.csv'
@@ -226,13 +228,15 @@ def plot_scatter_poverty_mmr():
     # Plotting graph
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
-    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red', label=f'Regression line \n y={slope:.2f}x + {intercept:.2f}') 
     plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt="Scatter Plot showing the relationship between Poverty Rate and Maternal Mortality Rate on a Global Scale."
+    txt="Scatter Plot showing the relationship between global poverty rate and maternal mortality rate on a Global Scale."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
+    plt.legend()
+    plt.savefig(f"{figures_directory}/scatter_global_poverty_vs_mmr.png")
     plt.show()
 
     r_squared_value = r2_score(Y, Y_pred)
@@ -253,12 +257,15 @@ def plot_bubble_plot():
     merged_df = merged_df.merge(education_df_world, on=["Country", "Year"])
 
     # X and Y values
+    X_1D = merged_df['PR'] *100
     X = merged_df[['PR']] * 100  # Double brackets makes it 2D
     Y = merged_df['MMR']
 
     # Bubbles
     bubbles = merged_df['PCR']
-    
+
+    # Linear regression
+    slope, intercept, r_value, p_value, std_err = linregress(X_1D, Y)
 
     # Fit for linear regression
     model = LinearRegression()
@@ -270,7 +277,7 @@ def plot_bubble_plot():
     # Plotting graph
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     scatter_plt= plt.scatter(X, Y,  alpha= 0.5, s=65, c=bubbles, cmap='winter_r', label='Data Points') 
-    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red', label=f'Regression line \n y={slope:.2f}x + {intercept:.2f}') 
 
     # A color bar to show GDP scaled
     cbar = plt.colorbar(scatter_plt)
@@ -278,9 +285,11 @@ def plot_bubble_plot():
     plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt="Bubble Plot showing the relationship between Poverty Rate, Maternal Mortality Rate and Education Completion on a Global Scale."
+    plt.legend()
+    txt="Bubble Plot showing the relationship between poverty rate, education completion and maternal mortality rate on a Global Scale."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
+    plt.savefig(f"{figures_directory}/bubble_global_poverty_vs_mmr.png")
     plt.show()
 
 
@@ -301,7 +310,6 @@ def box_plots():
     income_df = pd.read_csv(income_classification_csv)
     income_df = income_df.rename(columns={'Economy': 'Country'})
 
-
     merged_df = mmr_2023.merge(income_df, on=["Country"])
 
     merged_df.boxplot(
@@ -310,7 +318,7 @@ def box_plots():
     )
     # Plotting the Graph
     plt.suptitle(" ") # Gets rid of automatic graph title
-    plt.title("Distribution of Maternal Mortality Rate by Income Group ")
+    plt.title("Distribution of Maternal Mortality Rate by Income Group")
     plt.xlabel("Income Group")
     plt.ylabel('Mean Maternal Mortality Rate (Deaths per 100,000)')
     # Add horizontal line at y = 70 (70 mmr)
@@ -319,9 +327,10 @@ def box_plots():
     0.02, 70, 'mmr = 70',
     verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
 
-    txt="Box Plots showing the distribution of mmr in different income groups. Each point represent a country."
+    txt="Box Plots showing the distribution of maternal mortality in different income group in 2023. Each data point represent a country."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
+    plt.savefig(f"{figures_directory}/boxplot_income_education_vs_mmr.png")
     plt.show()
 
     return merged_df
@@ -358,6 +367,7 @@ def plot_time_income_mmr_series():
     plt.xlabel('Year')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
+    plt.savefig(f"{figures_directory}/timeseries_income_mmr.png")
     plt.show()
 
 
@@ -406,13 +416,15 @@ def plot_income_group_scatter(income_group):
     # Plotting graph
     plt.figure(figsize=(8, 6)) # Creates a new figures for each plot
     plt.scatter(X, Y, label='Data Points') 
-    plt.plot(X, Y_pred, linewidth=2,color = 'red',label='Regression Line') 
+    plt.plot(X, Y_pred, linewidth=2,color = 'red', label=f'Regression line \n y={slope:.2f}x + {intercept:.2f}') 
     plt.title(f'{income_group}: Primary Completion Rate vs Mean Maternal Mortality Rate')
     plt.xlabel('Primary completion rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt=f"Scatter Plot showing the relationship between Education Rate and Mean Maternal Mortality for{income_group}."
+    txt=f"Scatter Plot showing the relationship between education rate and mean maternal mortality for {income_group}."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
+    plt.legend()
+    plt.savefig(f"{figures_directory}/timeseries_{income_group}_mmr.png")
     plt.show()
 
     r_squared_value = r2_score(Y, Y_pred)
@@ -432,14 +444,16 @@ def plot_high_low_income_scatter():
 
     # high income
     plot_single_income("High income", ax_high)
-
+ 
     # low income
     plot_single_income("Low income", ax_low)
 
+    ax_high.legend()
+    ax_low.legend() 
     plt.tight_layout()
-    txt="Scatter Plot showing the relationship between Education Completion and Maternal Mortality Rate in High and Low Income Groups."
+    txt="Scatter Plot showing the relationship between education completion and maternal mortality rate in High and Low Income Groups."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
-    plt.legend()
+    plt.savefig(f"{figures_directory}/scatter_high_low_pov_mmr.png")
     plt.show()
 
 
@@ -472,18 +486,24 @@ def plot_single_income(income_group, ax):
     )
 
     merged_df = merged_df.dropna(subset=['PCR', 'Mean_MMR'])
-
+ 
+    X_1D= merged_df['PCR']
     X = merged_df[['PCR']]
     Y = merged_df['Mean_MMR']
+
 
     model = LinearRegression()
     model.fit(X, Y)
     Y_pred = model.predict(X)
 
-    ax.scatter(X, Y)
-    ax.plot(X, Y_pred, color='red', linewidth=2)
+    # Linear regression
+    slope, intercept, r_value, p_value, std_err = linregress(X_1D, Y)
 
-    ax.set_title(f"{income_group}")
+
+    ax.scatter(X, Y, label='Data Points')
+    ax.plot(X, Y_pred, color='red', linewidth=2, label=f'Regression line \n y={slope:.2f}x + {intercept:.2f}')
+
+    ax.set_title(f'{income_group}: Primary Completion Rate vs Mean Maternal Mortality Rate')
     ax.set_xlabel("Primary completion rate %")
     ax.set_ylabel("Maternal Mortality Rate")
 
@@ -516,9 +536,10 @@ def plot_world_nigeria_timeseries():
     ax_nigeria.legend()
     
     plt.tight_layout()
-    txt="Timeseries showing Maternal Mortality Ratio overtime Globally and in Nigeria."
+
+    txt="Timeseries showing maternal mortality ratio overtime Globally and in Nigeria."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
-    
+    plt.savefig(f"{figures_directory}/timeseries_world_nigeria_mmr.png")
     plt.show()
 
     return world_change, nigeria_change
@@ -642,38 +663,38 @@ poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "W
 
 if __name__ == "__main__":
     
-    pov_2023_column = percentage_pop_poverty()
-    print (pov_2023_column)
+    # pov_2023_column = percentage_pop_poverty()
+    # print (pov_2023_column)
 
     plot_world_nigeria_mmr = plot_world_nigeria_timeseries()
     print(plot_world_nigeria_mmr)
 
 
-    mmr_2023_value, percentage_lmic = get_global_mmr_values()
-    print(f"mmr 2023 value is {mmr_2023_value}") 
-    print(f"Percentage of mmr in LMICs {percentage_lmic}")
-    # Plots scatter plot for poverty and mmr globally 
+    # mmr_2023_value, percentage_lmic = get_global_mmr_values()
+    # print(f"mmr 2023 value is {mmr_2023_value}") 
+    # print(f"Percentage of mmr in LMICs {percentage_lmic}")
+    # # Plots scatter plot for poverty and mmr globally 
 
-    X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
-    print(f"Slope for Global Poverty vs Global mmr: {slope}")
-    print(f"Correlation Coefficient for Global Poverty vs Global mmr: {correlation_coefficient}")
-    print(f"R squared value for Global Poverty vs Global mmr: {r_squared_value}")
+    # X_1D, X, merged_df, slope , correlation_coefficient , r_squared_value = plot_scatter_poverty_mmr()
+    # print(f"Slope for Global Poverty vs Global mmr: {slope}")
+    # print(f"Correlation Coefficient for Global Poverty vs Global mmr: {correlation_coefficient}")
+    # print(f"R squared value for Global Poverty vs Global mmr: {r_squared_value}")
 
-    # Plots bubble plot for global data
-    bubble_plot= plot_bubble_plot()
+    # # Plots bubble plot for global data
+    # bubble_plot= plot_bubble_plot()
 
-    # Plots Income groups graphs
-    income_groups = mmr_df_income["Income group"].unique()
-    for income_group in income_groups:
-        merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
-        print(f"{income_group}'s correlation is : {r_value}")
+    # # Plots Income groups graphs
+    # income_groups = mmr_df_income["Income group"].unique()
+    # for income_group in income_groups:
+    #     merged_df, r_value, r_squared_value = plot_income_group_scatter(income_group)
+    #     print(f"{income_group}'s correlation is : {r_value}")
 
-    high_low_scatter = plot_high_low_income_scatter()
+    # high_low_scatter = plot_high_low_income_scatter()
 
-    plot = plot_time_income_mmr_series()
-    print(plot)
+    # plot = plot_time_income_mmr_series()
+    # print(plot)
 
-    box_plot = box_plots()
-    print(box_plot)
+    # box_plot = box_plots()
+    # print(box_plot)
 
-    highest = highest_mmr_by_year()
+    # highest = highest_mmr_by_year()
