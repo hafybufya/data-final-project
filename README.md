@@ -16,7 +16,7 @@ To examine this relationship in depth, this hypothesis is broken up into two sub
 * Linear regression, correlation coefficients, and R² values
 * Vigorous unit testing of functions
 
-## 💻 AI Assistance
+## 💻 AI Usage
 Some of the code and debugging in this project were developed with the assistance of chatGPT.
 AI was used to:
 * Calculate and label outlier on the boxplot
