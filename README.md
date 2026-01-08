@@ -11,7 +11,7 @@ To examine this relationship in depth, this hypothesis is broken up into two sub
 
 ## ✨ Key Features
 * Cleaning and processing of multiple authentic datasets
-* Global level and income group level and country level analysis
+* Global level, income group level and country level analysis
 * Scatter plots, timeseries plots, bubble plots, and box plots
 * Linear regression, correlation coefficients, and R² values
 * Vigorous unit testing of functions
@@ -65,6 +65,9 @@ The datasets used were obtained from The World Bank Group (WBG) and the World He
 
 All datasets are loaded from the ```data/``` directory and processed using ```pandas```
 Data used in this investigation was all publically available.
+
+## 📈 Figures
+All figures created in this report are saved in the ```figures/``` directory.
 
 ## 🎯 Conclusions
 
