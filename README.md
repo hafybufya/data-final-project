@@ -103,3 +103,7 @@ pip install pandas matplotlib os scipy sklearn
 
 ```
 
+## 📄 License
+
+This project is open source and available under the [MIT License](https://github.com/hafybufya/data-final-project/blob/main/LICENSE).
+
