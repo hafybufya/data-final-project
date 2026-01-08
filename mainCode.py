@@ -360,7 +360,7 @@ def box_plots():
     plt.text(
     0.02, 70, 'mmr = 70',
     verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
-    txt="Figure 3: Boxplots showing the distribution of maternal mortality ratio in different World Bank income groups in 2023 (most recent available year of data). Each data point represent a country."
+    txt="Figure 3: Boxplots showing the distribution of maternal mortality ratio in different World Bank income groups in 2023 (most recent available year of data). Each data point represent a country. The extreme outlier in lower-middle income is higlighted (Nigeria)."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
     plt.tight_layout()
@@ -676,8 +676,8 @@ poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "W
 
 if __name__ == "__main__":
     
-    # pov_2023_column = percentage_pop_poverty()
-    # print (pov_2023_column)
+    pov_2023_column = percentage_pop_poverty()
+    print (pov_2023_column)
 
     plot_world_nigeria_mmr = plot_world_nigeria_timeseries()
     print(plot_world_nigeria_mmr)
