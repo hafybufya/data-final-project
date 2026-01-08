@@ -232,7 +232,7 @@ def plot_scatter_poverty_mmr():
     plt.title('Global Poverty Rate vs Global Maternal Mortality Rate')
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
-    txt="Scatter Plot showing the relationship between global poverty rate and maternal mortality ratio on a Global Scale."
+    txt="Figure 1: Scatter Plot showing the relationship between poverty rate and maternal mortality ratio on a Global Scale. Each point represents the global maternal mortality for a given year. The line represents the linear regression line."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.legend()
@@ -289,7 +289,7 @@ def plot_bubble_plot():
     plt.xlabel('Poverty Rate %')
     plt.ylabel('Maternal Mortality Rate (Deaths per 100,000)')
     plt.legend()
-    txt="Bubble Plot showing the relationship between poverty rate, education completion and maternal mortality ratio on a Global Scale."
+    txt="Bubble Plot showing the relationship between poverty rate, education completion and maternal mortality ratio on a Global Scale. Each point represents the global maternal mortality for a given year. The line represents the linear regression line. The cbar represents education rate."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(True)
     plt.tight_layout()
@@ -318,11 +318,38 @@ def box_plots():
     income_df = income_df.rename(columns={'Economy': 'Country'})
 
     merged_df = mmr_2023.merge(income_df, on=["Country"])
+    fig, ax = plt.subplots(figsize=(8, 7))
+    merged_df.boxplot( column="MMR", by="Income group" , ax=ax)
 
-    merged_df.boxplot(
-        column="MMR",
-        by="Income group"
+ 
+    # Gets most extreme mmr value
+    extreme_row = merged_df.loc[merged_df["MMR"].idxmax()]
+
+    # Gets y axis value
+    extreme_mmr = extreme_row["MMR"]
+     
+    # Gets country name
+    extreme_country = extreme_row["Country"]
+
+    # Gets income group of extreme value
+    extreme_income = extreme_row["Income group"]
+
+    # Find x-position of the income group box
+    income_groups = merged_df["Income group"].sort_values().unique()
+    x_pos = list(income_groups).index(extreme_income) 
+
+    # Plot and label the extreme point
+    ax.scatter(x_pos, extreme_mmr, color="red", s=80, zorder=5)
+
+    ax.annotate(
+        f"{extreme_country}",
+        xy=(x_pos, extreme_mmr),
+        xytext=(x_pos + 0.3, extreme_mmr + 20),
+        arrowprops=dict(arrowstyle="->", color="blue"),
+        fontsize=9,
+        color="blue"
     )
+
     # Plotting the Graph
     plt.suptitle(" ") # Gets rid of automatic graph title
     plt.title("Distribution of Maternal Mortality Rate by Income Group")
@@ -333,8 +360,7 @@ def box_plots():
     plt.text(
     0.02, 70, 'mmr = 70',
     verticalalignment='bottom', bbox ={'facecolor':'grey', 'alpha':0.2})
-
-    txt="Box Plots showing the distribution of maternal mortality ratio in different income group in 2023. Each data point represent a country."
+    txt="Figure 3: Boxplots showing the distribution of maternal mortality ratio in different World Bank income groups in 2023 (most recent available year of data). Each data point represent a country."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.grid(axis="y")
     plt.tight_layout()
@@ -431,7 +457,8 @@ def plot_high_low_income_scatter():
     ax_high.legend()
     ax_low.legend() 
     plt.tight_layout()
-    txt="Scatter Plot showing the relationship between education completion and maternal mortality ratio in High and Low Income Groups."
+    
+    txt="Figure 2: Scatter Plot showing the relationship between primary completion rate and maternal mortality ratio in High and Low Income Groups. Each point represents the Mean maternal mortality for each given year. The line represents the linear regression line. "
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.tight_layout()
     # Reserve space at the bottom for caption
@@ -523,7 +550,7 @@ def plot_world_nigeria_timeseries():
     # Reserve space at the bottom for caption
     plt.subplots_adjust(bottom=0.10)
 
-    txt="Timeseries showing maternal mortality ratio overtime Globally and in Nigeria."
+    txt="Timeseries showing maternal mortality ratio overtime globally and in Nigeria."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.savefig(f"{figures_directory}/timeseries_world_nigeria_mmr.png")
     plt.show()
@@ -649,8 +676,8 @@ poverty_df_world, education_df_world, mmr_df_world = world_filters("Country", "W
 
 if __name__ == "__main__":
     
-    pov_2023_column = percentage_pop_poverty()
-    print (pov_2023_column)
+    # pov_2023_column = percentage_pop_poverty()
+    # print (pov_2023_column)
 
     plot_world_nigeria_mmr = plot_world_nigeria_timeseries()
     print(plot_world_nigeria_mmr)
