@@ -458,7 +458,7 @@ def plot_high_low_income_scatter():
     ax_low.legend() 
     plt.tight_layout()
     
-    txt="Figure 2: Scatter Plot showing the relationship between primary completion rate and maternal mortality ratio in High and Low Income Groups. Each point represents the Mean maternal mortality for each given year. The line represents the linear regression line. "
+    txt="Figure 2: Scatter Plot showing the relationship between primary completion rate and maternal mortality ratio in High (a, left) and Low Income Groups (b, right). Each point represents the Mean maternal mortality for each given year. The line represents the linear regression line. "
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.tight_layout()
     # Reserve space at the bottom for caption
@@ -550,7 +550,7 @@ def plot_world_nigeria_timeseries():
     # Reserve space at the bottom for caption
     plt.subplots_adjust(bottom=0.10)
 
-    txt="Timeseries showing maternal mortality ratio overtime globally and in Nigeria."
+    txt="Timeseries showing maternal mortality ratio overtime globally (a, left) and in Nigeria (b, right) ."
     plt.figtext(0.5, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=9, bbox ={'facecolor':'grey', 'alpha':0.2})
     plt.savefig(f"{figures_directory}/timeseries_world_nigeria_mmr.png")
     plt.show()
