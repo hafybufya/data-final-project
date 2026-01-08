@@ -57,7 +57,7 @@ The datasets used were obtained from The World Bank Group (WBG) and the World He
 All datasets are loaded from the ```data/``` directory and processed using ```pandas```
 Data used in this investigation was all publically available.
 
-## 📈 Conclusions
+## 🎯 Conclusions
 
 * There is a relationship between poverty, education and maternal mortality but the strength of the relationship differs substaintially between income groups.
 * Education rates and maternal mortality rates have a strong negative relationship within low income and lower-middle income countries (r = -0.97) -> as education increases maternal mortality rate decrease
