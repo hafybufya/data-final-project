@@ -1,6 +1,6 @@
 # Data Final Project
 
-This is my Final Project for the year 2 module: Analysis, Software and Career Practice. This project investigates the relationship between poverty, education, and maternal mortality rates at both global, income-group and country level.
+This is my Final Project for the year 2 module: Analysis, Software and Career Practice. This project investigates the relationship between poverty, education, and maternal mortality rates at both global, income group and country level.
 
 ### 🧪 Hypothesis 
 
@@ -40,12 +40,12 @@ All analysis and the accomponying written report were done by the author (myself
 ├── figures/
 │   ├── boxplot_income_education_vs_mmr
 │   ├── bubble_global_poverty_vs_mmr
-│   ├── global_poverty_vs_mmr
+│   ├── scatter_global_poverty_vs_mmr
 │   ├── scatter_high_low_pov_mmr
 │   ├── timeseries_High income_mmr
 │   ├── timeseries_Low income_mmr
-│   ├── timeseries_Upper middle income_mmr
 │   ├── timeseries_Lower middle income_mmr
+│   ├── timeseries_Upper middle income_mmr
 │   └── timeseries_world_nigeria_mmr
 ├── LICENSE
 ├── README.md
